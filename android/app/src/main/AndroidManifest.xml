@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fr.eservices.app">
+    package="fr.eservices.anecdate_app">
    <application
-        android:label="app"
+        android:label="anecdate_app"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

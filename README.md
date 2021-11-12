@@ -1,4 +1,4 @@
-# app
+# anecdate_app
 
 AnecDate Flutter project.
 
