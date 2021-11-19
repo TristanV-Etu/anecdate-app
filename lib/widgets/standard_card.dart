@@ -1,32 +1,31 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:anecdate_app/model/anecdate.dart';
+import 'package:anecdate_app/widgets/details_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swipable/flutter_swipable.dart';
 
 class StandardCard extends Card {
-
   final Anecdate anecdate;
+
   StandardCard(this.anecdate);
+
+  final StreamController<double> _controller = StreamController<double>();
 
   @override
   Widget build(BuildContext context) {
+    double swipeAngle = math.pi / 4;
+    _controller.add(swipeAngle);
     var size = MediaQuery.of(context).size;
-    return Swipable(
-      onSwipeUp: (finalPosition) {
-        print("Swipe Up ${anecdate.title}");
-      },
-      onSwipeDown: (finalPosition) {
-        print("Swipe Down ${anecdate.title}");
-      },
-      onSwipeLeft: (finalPosition) {
-        print("Swipe Left ${anecdate.title}");
-      },
-      onSwipeRight: (finalPosition) {
-        print("Swipe Right ${anecdate.title}");
+    return InkWell(
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailsPage(anecdate)));
       },
       child: Padding(
         padding: EdgeInsets.all(26),
         child: SizedBox(
-          height: size.height*0.7,
+          height: size.height * 0.7,
           width: size.width,
           child: Card(
             elevation: 8,
@@ -36,7 +35,9 @@ class StandardCard extends Card {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                    anecdate.date.day.toString() + " / "+ anecdate.date.month.toString(),
+                  anecdate.date.day.toString() +
+                      " / " +
+                      anecdate.date.month.toString(),
                 ),
                 Stack(
                   alignment: Alignment.bottomLeft,
@@ -53,19 +54,25 @@ class StandardCard extends Card {
                   ],
                 ),
                 Padding(
-                    child: Text(anecdate.title), padding: EdgeInsets.all(20),
+                  child: Text(anecdate.title),
+                  padding: const EdgeInsets.all(20),
                 ),
-                const Divider(),Padding(
-                  child: Text(anecdate.description), padding: EdgeInsets.all(16),
+                const Divider(),
+                Padding(
+                  child: Text(
+                    anecdate.description,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  padding: const EdgeInsets.all(16),
                 ),
                 Row(
                   children: [
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
-                        onPressed: () {
-                          print("report ${anecdate.title}");
-                        },
-                        icon: Icon(Icons.warning),
+                      onPressed: () {
+                        print("report ${anecdate.title}");
+                      },
+                      icon: const Icon(Icons.warning),
                     )
                   ],
                 )
@@ -76,53 +83,4 @@ class StandardCard extends Card {
       ),
     );
   }
-
 }
-
-
-// Widget createStandardCard(Anecdate anecdate, double width, double height) {
-//   return Container(
-//     height: height,
-//     width: width,
-//     margin: const EdgeInsets.all(26),
-//     child: Column(
-//       children: [
-//         Text(
-//             anecdate.date.day.toString() + " / "+ anecdate.date.month.toString(),
-//         ),
-//         Stack(
-//           alignment: Alignment.bottomLeft,
-//           children: [
-//             Center(
-//               child: Image.asset(
-//                 anecdate.image!,
-//                 height: height * 0.4,
-//                 width: width,
-//                 fit: BoxFit.cover,
-//               ),
-//             ),
-//             Text(anecdate.date.year.toString()),
-//           ],
-//         ),
-//         Padding(
-//             child: Text(anecdate.title), padding: EdgeInsets.all(20),
-//         ),
-//         const Divider(),Padding(
-//           child: Text(anecdate.description), padding: EdgeInsets.all(16),
-//         ),
-//         Row(
-//           children: [
-//             Spacer(),
-//             IconButton(
-//                 onPressed: () {
-//                   print("report ${anecdate.title}");
-//                 },
-//                 icon: Icon(Icons.warning),
-//             )
-//           ],
-//         )
-//       ],
-//     ),
-//   );
-// }
-

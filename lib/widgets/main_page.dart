@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'package:anecdate_app/model/anecdate.dart';
+import 'package:anecdate_app/utils/api.dart';
 import 'package:anecdate_app/utils/globals.dart';
 import 'package:anecdate_app/widgets/app_bar.dart';
+import 'package:anecdate_app/widgets/nav_menu.dart';
 import 'package:anecdate_app/widgets/standard_card.dart';
+import 'package:another_transformer_page_view/another_transformer_page_view.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:anecdate_app/widgets/dependancies/build_transformer.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -17,50 +20,45 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> {
 
   late List<Anecdate> anecdates;
-  late BehaviorSubject<List<StandardCard>> cards;
 
   @override
   void initState() {
+    access([]);
     Map<String, dynamic> map = jsonDecode(Globals.testJSON);
     anecdates = [];
     map["data"].forEach((element) => anecdates.add(Anecdate.fromJson(element)));
-    cards = BehaviorSubject.seeded(createCards());
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: createAppBar(),
+      appBar: CustomAppBar(),
+      drawer: NavDrawer(),
       body: Container(
         alignment: Alignment.center,
-        width: MediaQuery.of(context).size.width * 0.8,
-        height: MediaQuery.of(context).size.height * 0.7,
-        // Important to keep as a stack to have overlay of cards.
-        child: StreamBuilder<List<Card>>(
-          stream: cards,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return SizedBox();
-            final data = snapshot.data;
-            return Stack(
-              children: data!,
-            );
-          },
-        ),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: createSwiper(),
       ),
     );
   }
 
-  List<StandardCard> createCards() {
-    List<StandardCard> list = [];
-    anecdates.forEach((element) => list.add(StandardCard(element)));
-    return list;
+  TransformerPageView createSwiper(){
+    return TransformerPageView(
+        loop: true,
+        scrollDirection: Axis.vertical,
+        transformer: DeepthPageTransformer(),
+        itemBuilder: (BuildContext context, int index) {
+          return StandardCard(anecdates[index]);
+        },
+        itemCount: anecdates.length,
+    );
   }
 
 }
