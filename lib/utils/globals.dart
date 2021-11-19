@@ -1,6 +1,10 @@
 class Globals{
   static const String nameApp = "Anec'Date";
 
+  static bool isConnect = false;
+
+  static String userName = "Timoléon";
+
   static const String testJSON = '{"data" : [{' +
       ' "id" : 0, ' +
       ' "status" : "active", ' +
