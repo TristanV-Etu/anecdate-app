@@ -13,8 +13,7 @@ Anecdate _$AnecdateFromJson(Map<String, dynamic> json) => Anecdate(
       date: DateTime.parse(json['date'] as String),
       idCategory: json['idCategory'] as int,
       description: json['description'] as String,
-      sources:
-          (json['sources'] as List<dynamic>).map((e) => e as String).toList(),
+      sources: json['sources'] as String,
       idQuizz: json['idQuizz'] as int?,
       creationDate: DateTime.parse(json['creation_date'] as String),
       likes: json['likes'] as int,

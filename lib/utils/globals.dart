@@ -1,25 +1,53 @@
+import 'package:anecdate_app/utils/shared_paramaters.dart';
+
 class Globals{
+
+  static const String apiIP = "15.188.56.39";
+  static const String apiPort = "8080";
+
+  static String getApiAdresse() => apiIP+":"+apiPort;
+
   static const String nameApp = "Anec'Date";
 
+
+
+
+  // USER
+
   static bool isConnect = false;
+  static String userName = "";
+  static String tokenAuth = "";
 
-  static String userName = "Timoléon";
 
-  static const String testJSON = '{"data" : [{' +
-      ' "id" : 0, ' +
-      ' "status" : "active", ' +
-      ' "title" : "Timoleon", ' +
-      ' "date" : "2021-11-07T23:00:00.000Z", ' +
-      ' "idCategory" : 2, ' +
-      ' "description" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras laoreet malesuada orci a lobortis. Fusce eget ante tempor, vulputate velit a, sollicitudin tortor. Ut consectetur dapibus nulla, sit amet auctor nunc aliquam a. Integer id luctus ligula. Suspendisse congue consequat lorem varius aliquet. In eget gravida lacus. Nullam vel lorem sed lorem laoreet malesuada. Donec lectus magna, lobortis at ipsum quis, placerat suscipit eros.", ' +
-      ' "sources" : ["www.google.com"], ' +
-      ' "idQuizz" : null, ' +
-      ' "creation_date" : "2021-11-07T23:00:00.000Z", ' +
-      ' "likes" : 0, ' +
-      ' "dislikes" : 0, ' +
-      ' "idAuthor" : 0, ' +
-      ' "image" : "resources/images/seals.jpg" ' +
-      '}, {"id": 22, "status": "active","title": "test","date": "2021-11-13T23:00:00.000Z","idCategory": 1,"description": "test","sources": ["test"],"idQuiz": null,"creation_date": "2021-11-13T23:00:00.000Z","likes": 0,"dislikes": 0,"idAuthor": 1,"image": "resources/images/drink.jpg"},' +
-      '{"id": 21,"status": "active","title": "abcd","date": "2021-11-13T23:00:00.000Z","idCategory": 1,"description": "zertya","sources": ["test"],"idQuiz": 0,"creation_date": "2021-11-13T23:00:00.000Z","likes": 0,"dislikes": 0,"idAuthor": 1,"image": "resources/images/woman.jpg"}]}';
+  static bool quizzMode = false;
 
+  //CATEGORIES
+  static Map<String, dynamic> choiceCategories = {};
+  static Map<String, dynamic> idsCategories = {};
+
+  //SETTINGS
+  static bool darkTheme = false;
+  static bool swipeMode = true;
+  static bool activeNotif = true;
+  static int hourNotif = 7;
+  static int minuteNotif = 30;
+  static Map<String, dynamic> choiceDays = {"Lundi": false, "Mardi": false, "Mercredi": false, "Jeudi": false, "Vendredi": false, "Samedi": false, "Dimanche": false };
+
+
+  static Future<void> pushPreferences() async {
+    await SharedParameters.pref!.setBool("isConnect", isConnect);
+    await SharedParameters.changeUserName(userName);
+    await SharedParameters.changeTokenAuth(tokenAuth);
+
+    await SharedParameters.pref!.setBool("quizzMode", quizzMode);
+
+    await SharedParameters.pref!.setBool("darkTheme", darkTheme);
+    await SharedParameters.pref!.setBool("swipeMode", swipeMode);
+    await SharedParameters.pref!.setBool("activeNotif", activeNotif);
+    await SharedParameters.changeHourNotif(hourNotif, minuteNotif);
+    await SharedParameters.changeDaysNotif(choiceDays);
+
+    await SharedParameters.changeChoiceCategories(choiceCategories);
+    await SharedParameters.changeIdsCategories(idsCategories);
+  }
 }

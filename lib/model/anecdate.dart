@@ -11,7 +11,7 @@ class Anecdate {
   final DateTime date;
   final int idCategory;
   final String description;
-  final List<String> sources;
+  final String sources;
   final int? idQuizz;
   final DateTime creationDate;
   final int likes;
@@ -38,10 +38,13 @@ class Anecdate {
 
   factory Anecdate.fromJson(Map<String, dynamic> json) => _$AnecdateFromJson(json);
 
-  /// Connect the generated [_$PersonToJson] function to the `toJson` method.
   Map<String, dynamic> toJson() => _$AnecdateToJson(this);
 
   static DateTime _fromJson(int int) => DateTime.fromMillisecondsSinceEpoch(int);
   static int _toJson(DateTime time) => time.millisecondsSinceEpoch;
+
+  List<String> getSources() {
+    return sources.split(" ");
+  }
 
 }

@@ -4,18 +4,15 @@ import 'dart:math' as math;
 import 'package:anecdate_app/model/anecdate.dart';
 import 'package:anecdate_app/widgets/details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:swipe/swipe.dart';
 
 class StandardCard extends Card {
   final Anecdate anecdate;
 
   StandardCard(this.anecdate);
 
-  final StreamController<double> _controller = StreamController<double>();
-
   @override
   Widget build(BuildContext context) {
-    double swipeAngle = math.pi / 4;
-    _controller.add(swipeAngle);
     var size = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
@@ -43,7 +40,7 @@ class StandardCard extends Card {
                   alignment: Alignment.bottomLeft,
                   children: [
                     Center(
-                      child: Image.asset(
+                      child: Image.network(
                         anecdate.image!,
                         height: size.height * 0.2,
                         width: size.width,

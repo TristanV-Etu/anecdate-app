@@ -3,10 +3,19 @@
 // found in the LICENSE file.
 
 import 'package:anecdate_app/utils/globals.dart';
+import 'package:anecdate_app/widgets/about_page.dart';
+import 'package:anecdate_app/widgets/categories_page.dart';
+import 'package:anecdate_app/widgets/connection.dart';
+import 'package:anecdate_app/widgets/settings_page.dart';
+import 'package:anecdate_app/widgets/tuto_page.dart';
 import 'package:flutter/material.dart';
 
-class NavDrawer extends StatelessWidget {
-  NavDrawer({Key? key}) : super(key: key);
+class NavDrawer extends StatefulWidget {
+  @override
+  NavDrawerState createState() => NavDrawerState();
+}
+
+class NavDrawerState extends State<NavDrawer> {
 
   final List<String> _strings = [
     "Mon compte",
@@ -41,12 +50,12 @@ class NavDrawer extends StatelessWidget {
       _print1,
       _print2,
       _print3,
-      _print4,
-      _print5,
-      _print6,
-      _print7,
-      _print8,
-      _print9
+      _deconnection,
+      _goToCategoriesPage,
+      _goToAddAnecdatePage,
+      _goToSettingsPage,
+      _goToTutoPage,
+      _goToAboutPage
     ];
     _ctx = context;
     return Drawer(
@@ -88,10 +97,18 @@ class NavDrawer extends StatelessWidget {
         _createTile(_strings[0], _icons[0], _functions[0])
     );
     list.add(
-        _createConnectButton("Connexion", (){ print("Connexion"); _pop();})
+        _createConnectButton("Connexion", (){
+          _pop();
+          Navigator.push(_ctx,
+              MaterialPageRoute(builder: (context) => LoginPage()));
+        })
     );
     list.add(
-        _createConnectButton("Se connecter", (){ print("Se connecter"); _pop();})
+        _createConnectButton("Se connecter", (){
+          _pop();
+          Navigator.push(_ctx,
+              MaterialPageRoute(builder: (context) => SignUpPage()));
+        })
     );
     return list;
   }
@@ -114,14 +131,58 @@ class NavDrawer extends StatelessWidget {
     Navigator.pop(_ctx);
   }
 
+  void _goToCategoriesPage() {
+    _pop();
+    Navigator.push(_ctx,
+        TransparentRoute(builder: (context) => CategoriesPage())
+    );
+  }
+
+  void _goToAddAnecdatePage() {
+    if (Globals.isConnect) {
+      print("Add page");
+    } else
+    {
+      _pop();
+      Navigator.push(_ctx,
+          MaterialPageRoute(builder: (context) => SignUpPage())
+      );
+    }
+  }
+
+  void _goToSettingsPage() {
+    _pop();
+    Navigator.push(_ctx,
+        MaterialPageRoute(builder: (context) => SettingsPage())
+    );
+  }
+
+  void _goToTutoPage() {
+    _pop();
+    Navigator.push(_ctx,
+        TransparentRoute(builder: (context) => TutoPage())
+    );
+  }
+
+  void _goToAboutPage() {
+    _pop();
+    Navigator.push(_ctx,
+        MaterialPageRoute(builder: (context) => AboutPage())
+    );
+  }
+
+  void _deconnection() {
+    _pop();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Vous vous êtes déconnecté.")));
+    Globals.userName = "";
+    Globals.isConnect = false;
+    Globals.tokenAuth = "";
+    Globals.pushPreferences();
+  }
+
+
+
   void _print1(){print(1);_pop();}
   void _print2(){print(2);_pop();}
   void _print3(){print(3);_pop();}
-  void _print4(){print(4);_pop();}
-  void _print5(){print(5);_pop();}
-  void _print6(){print(6);_pop();}
-  void _print7(){print(7);_pop();}
-  void _print8(){print(8);_pop();}
-  void _print9(){print(9);_pop();}
-  void _print10(){print(10);_pop();}
 }
