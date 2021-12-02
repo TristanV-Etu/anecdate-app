@@ -11,6 +11,7 @@ Comment _$CommentFromJson(Map<String, dynamic> json) => Comment(
       status: json['status'] as String,
       idAuthor: json['idAuthor'] as int,
       message: json['message'] as String,
+      date: DateTime.parse(json['date'] as String),
       idAnecdate: json['idAnecdate'] as int,
     );
 
@@ -19,5 +20,6 @@ Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
       'status': instance.status,
       'idAuthor': instance.idAuthor,
       'message': instance.message,
+      'date': instance.date.toIso8601String(),
       'idAnecdate': instance.idAnecdate,
     };

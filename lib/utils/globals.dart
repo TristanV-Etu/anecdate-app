@@ -16,6 +16,7 @@ class Globals{
 
   static bool isConnect = false;
   static String userName = "";
+  static int idUser = -1;
   static String tokenAuth = "";
 
 

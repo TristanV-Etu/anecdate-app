@@ -10,6 +10,8 @@ import 'package:anecdate_app/widgets/settings_page.dart';
 import 'package:anecdate_app/widgets/tuto_page.dart';
 import 'package:flutter/material.dart';
 
+import 'add_anecdate_page.dart';
+
 class NavDrawer extends StatefulWidget {
   @override
   NavDrawerState createState() => NavDrawerState();
@@ -70,6 +72,9 @@ class NavDrawerState extends State<NavDrawer> {
     if (! Globals.isConnect) {
       _addConnectPart(list);
       i = 4;
+    } else {
+      list.add(_createTile(Globals.userName, _icons[0], (){}));
+      list.add(const Divider());
     }
 
     for(; i < _strings.length; i++) {
@@ -139,8 +144,10 @@ class NavDrawerState extends State<NavDrawer> {
   }
 
   void _goToAddAnecdatePage() {
-    if (Globals.isConnect) {
-      print("Add page");
+    if (Globals.isConnect) {_pop();
+    Navigator.push(_ctx,
+        MaterialPageRoute(builder: (context) => AddAnecdatePage())
+    );
     } else
     {
       _pop();
@@ -176,6 +183,7 @@ class NavDrawerState extends State<NavDrawer> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Vous vous êtes déconnecté.")));
     Globals.userName = "";
     Globals.isConnect = false;
+    Globals.idUser = -1;
     Globals.tokenAuth = "";
     Globals.pushPreferences();
   }

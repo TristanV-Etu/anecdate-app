@@ -10,10 +10,11 @@ class Comment {
   final String status;
   final int idAuthor;
   final String message;
+  final DateTime date;
   final int idAnecdate;
 
 
-  Comment({required this.id, required this.status, required this.idAuthor, required this.message, required this.idAnecdate});
+  Comment({required this.id, required this.status, required this.idAuthor, required this.message,required this.date, required this.idAnecdate});
 
   factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
 

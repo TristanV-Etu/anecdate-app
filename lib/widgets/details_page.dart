@@ -4,6 +4,7 @@ import 'package:anecdate_app/utils/api.dart';
 import 'package:anecdate_app/utils/globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DetailsPage extends StatefulWidget {
@@ -18,8 +19,20 @@ class DetailsPage extends StatefulWidget {
 class DetailsPageState extends State<DetailsPage> {
   Anecdate anecdate;
   late Size _size;
+  List<Widget> _comments = [];
+
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController _commentEdit;
+
+  var _currentFocus;
+
+  void _unfocus() {
+    _currentFocus = FocusScope.of(context);
+
+    if (!_currentFocus.hasPrimaryFocus) {
+      _currentFocus.unfocus();
+    }
+  }
 
   DetailsPageState(this.anecdate);
 
@@ -27,6 +40,7 @@ class DetailsPageState extends State<DetailsPage> {
   void initState() {
     super.initState();
     _commentEdit = TextEditingController();
+    _callApiComments();
   }
 
   @override
@@ -38,10 +52,13 @@ class DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: _createCard(),
+    return GestureDetector(
+      onTap: _unfocus,
+      child: Scaffold(
+        appBar: AppBar(),
+        body: SingleChildScrollView(
+          child: _createCard(),
+        ),
       ),
     );
   }
@@ -120,8 +137,7 @@ class DetailsPageState extends State<DetailsPage> {
       Text("Source(s) :"),
     ]);
     anecdate.getSources().forEach((element) {
-      list
-          .add(InkWell(child: Text(element), onTap: () => launch(element)));
+      list.add(InkWell(child: Text(element), onTap: () => launch(element)));
     });
   }
 
@@ -133,7 +149,15 @@ class DetailsPageState extends State<DetailsPage> {
     if (Globals.isConnect) {
       list.add(_postCommentBloc());
     }
-    list.add(
+    list.add(Column(
+      children: _comments,
+    ));
+    _callApiComments();
+  }
+
+  void _callApiComments() {
+    _comments = [];
+    _comments.add(
       FutureBuilder<List<Comment>>(
           future: _getComments(),
           builder: (context, snapshot) {
@@ -162,6 +186,7 @@ class DetailsPageState extends State<DetailsPage> {
   }
 
   Widget _createCommentBloc(Comment comment) {
+    String formattedDate = DateFormat('dd/MM/yyyy').format(comment.date);
     return Container(
         color: Colors.cyan,
         child: Padding(
@@ -181,11 +206,7 @@ class DetailsPageState extends State<DetailsPage> {
                           return Text("Anonyme");
                         }),
                     Spacer(),
-                    Text(anecdate.date.day.toString() +
-                        "/" +
-                        anecdate.date.month.toString() +
-                        "/" +
-                        anecdate.date.year.toString()),
+                    Text(formattedDate),
                   ],
                 ),
                 Text(comment.message),
@@ -211,11 +232,9 @@ class DetailsPageState extends State<DetailsPage> {
           maxLines: null,
           controller: _commentEdit,
           validator: (value) {
-            print(value!.length);
             if (value == null || value.isEmpty) {
               return "Veuillez entrer un commentaire valide.";
-            }
-            else if(value.length > 255) {
+            } else if (value.length > 255) {
               textLength = value.length - 255;
               return "255 caractères maximum. (Il y a $textLength en trop)";
             }
@@ -225,7 +244,11 @@ class DetailsPageState extends State<DetailsPage> {
         ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              print(_commentEdit.text);
+              postComment(_commentEdit.text, anecdate.id, context);
+              _commentEdit.text = "";
+              setState(() {
+                _callApiComments();
+              });
             }
           },
           child: Text("Envoyer"),

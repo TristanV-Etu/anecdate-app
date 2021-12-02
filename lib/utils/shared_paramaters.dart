@@ -18,15 +18,14 @@ class SharedParameters {
     else {
       await _initializePrefInGlobals();
     }
-    print(Globals.isConnect);
   }
 
   static Future<void> _initializeFirstUse() async {
-    print("first use");
     await pref!.setBool("firstUse", true);
 
     await pref!.setBool("isConnect", Globals.isConnect);
     await changeUserName(Globals.userName);
+    await changeidUser(Globals.idUser);
     await changeTokenAuth(Globals.tokenAuth);
 
     await pref!.setBool("quizzMode", Globals.quizzMode);
@@ -58,6 +57,7 @@ class SharedParameters {
     try {
       Globals.isConnect = (pref!.getBool("isConnect"))!;
       Globals.userName = (pref!.getString("userName"))!;
+      Globals.idUser = (pref!.getInt("idUser"))!;
       Globals.tokenAuth = (pref!.getString("tokenAuth"))!;
 
       Globals.quizzMode = (pref!.getBool("quizzMode"))!;
@@ -124,6 +124,10 @@ class SharedParameters {
 
   static Future<void> changeUserName(String username) async {
     await pref!.setString("userName", username);
+  }
+
+  static Future<void> changeidUser(int idUser) async {
+    await pref!.setInt("idUser", idUser);
   }
 
   static Future<void> changeTokenAuth(String tokenAuth) async {

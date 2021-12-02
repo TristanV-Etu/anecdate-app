@@ -12,6 +12,15 @@ class LoginPageState extends State<LoginPage> {
   late TextEditingController _username;
   late TextEditingController _password;
   bool _obscureText = true;
+  var _currentFocus;
+
+  void _unfocus() {
+    _currentFocus = FocusScope.of(context);
+
+    if (!_currentFocus.hasPrimaryFocus) {
+      _currentFocus.unfocus();
+    }
+  }
 
   @override
   void initState() {
@@ -29,9 +38,12 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _createBody(context),
-      appBar: AppBar(),
+    return GestureDetector(
+      onTap: _unfocus,
+      child: Scaffold(
+        body: _createBody(context),
+        appBar: AppBar(),
+      ),
     );
   }
 
@@ -112,6 +124,15 @@ class SignUpPageState extends State<SignUpPage> {
   late TextEditingController _mail;
   late TextEditingController _password;
   bool _obscureText = true;
+  var _currentFocus;
+
+  void _unfocus() {
+    _currentFocus = FocusScope.of(context);
+
+    if (!_currentFocus.hasPrimaryFocus) {
+      _currentFocus.unfocus();
+    }
+  }
 
   @override
   void initState() {
@@ -131,9 +152,12 @@ class SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _createBody(context),
-      appBar: AppBar(),
+    return GestureDetector(
+      onTap: _unfocus,
+      child: Scaffold(
+        body: _createBody(context),
+        appBar: AppBar(),
+      ),
     );
   }
 
@@ -234,8 +258,7 @@ class AlreadyHaveAnAccountCheck extends StatelessWidget {
   }) : super(key: key);
 
   void changePage(BuildContext context) {
-    Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return login ? SignUpPage() : LoginPage();
     }));
   }
