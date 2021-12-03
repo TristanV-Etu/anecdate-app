@@ -1,19 +1,22 @@
-import 'dart:async';
-import 'dart:math' as math;
-
 import 'package:anecdate_app/model/anecdate.dart';
-import 'package:anecdate_app/widgets/details_page.dart';
+import 'package:anecdate_app/utils/globals.dart';
+import 'package:anecdate_app/widgets/pages/details_page.dart';
+import 'package:anecdate_app/widgets/pages/report_page.dart';
 import 'package:flutter/material.dart';
-import 'package:swipe/swipe.dart';
+
+import '../connection.dart';
 
 class StandardCard extends Card {
   final Anecdate anecdate;
+  late BuildContext _ctx;
+  late Size _size;
 
   StandardCard(this.anecdate);
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    _ctx = context;
+    _size = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
         Navigator.push(context,
@@ -22,8 +25,8 @@ class StandardCard extends Card {
       child: Padding(
         padding: EdgeInsets.all(26),
         child: SizedBox(
-          height: size.height * 0.7,
-          width: size.width,
+          height: _size.height * 0.7,
+          width: _size.width,
           child: Card(
             elevation: 8,
             child: Column(
@@ -42,8 +45,8 @@ class StandardCard extends Card {
                     Center(
                       child: Image.network(
                         anecdate.image!,
-                        height: size.height * 0.2,
-                        width: size.width,
+                        height: _size.height * 0.2,
+                        width: _size.width,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -67,7 +70,7 @@ class StandardCard extends Card {
                     const Spacer(),
                     IconButton(
                       onPressed: () {
-                        print("report ${anecdate.title}");
+                        _goToReportPage();
                       },
                       icon: const Icon(Icons.warning),
                     )
@@ -79,5 +82,15 @@ class StandardCard extends Card {
         ),
       ),
     );
+  }
+
+  void _goToReportPage() {
+    if (Globals.isConnect) {
+      Navigator.push(_ctx,
+          MaterialPageRoute(builder: (context) => ReportPage(anecdate.id)));
+    } else {
+      Navigator.push(
+          _ctx, MaterialPageRoute(builder: (context) => SignUpPage()));
+    }
   }
 }

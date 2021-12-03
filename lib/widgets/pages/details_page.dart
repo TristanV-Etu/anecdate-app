@@ -2,10 +2,13 @@ import 'package:anecdate_app/model/anecdate.dart';
 import 'package:anecdate_app/model/comment.dart';
 import 'package:anecdate_app/utils/api.dart';
 import 'package:anecdate_app/utils/globals.dart';
+import 'package:anecdate_app/widgets/pages/report_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../connection.dart';
 
 class DetailsPage extends StatefulWidget {
   Anecdate anecdate;
@@ -18,6 +21,7 @@ class DetailsPage extends StatefulWidget {
 
 class DetailsPageState extends State<DetailsPage> {
   Anecdate anecdate;
+  late BuildContext _ctx;
   late Size _size;
   List<Widget> _comments = [];
 
@@ -39,6 +43,7 @@ class DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
+    print(anecdate.likes);
     _commentEdit = TextEditingController();
     _callApiComments();
   }
@@ -51,6 +56,7 @@ class DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    _ctx = context;
     _size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: _unfocus,
@@ -263,11 +269,21 @@ class DetailsPageState extends State<DetailsPage> {
         const Spacer(),
         IconButton(
           onPressed: () {
-            print("report ${anecdate.title}");
+            _goToReportPage();
           },
           icon: const Icon(Icons.warning),
         )
       ],
     ));
+  }
+
+  void _goToReportPage() {
+    if (Globals.isConnect) {
+      Navigator.push(_ctx,
+          MaterialPageRoute(builder: (context) => ReportPage(anecdate.id)));
+    } else {
+      Navigator.push(
+          _ctx, MaterialPageRoute(builder: (context) => SignUpPage()));
+    }
   }
 }

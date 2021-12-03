@@ -1,11 +1,15 @@
 import 'package:anecdate_app/utils/globals.dart';
 import 'package:anecdate_app/utils/theme.dart';
-import 'package:anecdate_app/widgets/main_page.dart';
+import 'package:anecdate_app/widgets/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((value) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {

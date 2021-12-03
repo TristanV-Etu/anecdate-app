@@ -14,8 +14,8 @@ class Anecdate {
   final String sources;
   final int? idQuizz;
   final DateTime creationDate;
-  final int likes;
-  final int dislikes;
+  int likes;
+  int dislikes;
   final int idAuthor;
   final String? image;
 
@@ -45,6 +45,14 @@ class Anecdate {
 
   List<String> getSources() {
     return sources.split(" ");
+  }
+
+  void sendLike(){
+    print("add");
+    likes += 1;
+  }
+  void sendDislike(){
+    dislikes += 1;
   }
 
 }

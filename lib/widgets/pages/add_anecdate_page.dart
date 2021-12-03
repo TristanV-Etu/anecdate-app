@@ -27,6 +27,7 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   late TextEditingController _badAnswer2Con;
   late TextEditingController _badAnswer3Con;
   late Size _size;
+  late BuildContext _ctx;
   late DateTime _selectedDate;
   ImagePicker _picker = ImagePicker();
   File? _imageFile;
@@ -73,6 +74,7 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
 
   @override
   Widget build(BuildContext context) {
+    _ctx = context;
     _size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: _unfocus,
@@ -317,7 +319,9 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
                       ),
                       onChanged: (String? newValue) {
                         setState(() {
+                          print(_categoryValue);
                           _categoryValue = newValue!;
+                          print(_categoryValue);
                         });
                       },
                       items: items,
@@ -591,10 +595,17 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   Widget _createValidateButton() {
     return ElevatedButton(
       onPressed: () {
-        if (_formKey.currentState!.validate()) {
+        if (_imageFile == null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content:
+                  Text("N'oubliez pas de mettre une image d'illustration.")));
+        } else if (_formKey.currentState!.validate()) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Votre aned'date est en cours d'envoi...")));
+
           postNewAnecDate(
-              _titleCon.text, 
-              _dateCon.text, 
+              _titleCon.text,
+              _dateCon.text,
               _imageFile!,
               _categoryValue,
               _descCon.text,
@@ -603,8 +614,8 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
               _goodAnswerCon.text,
               _badAnswer1Con.text,
               _badAnswer2Con.text,
-              _badAnswer3Con.text
-          );
+              _badAnswer3Con.text,
+              _ctx);
         }
       },
       child: Text("Envoyer"),

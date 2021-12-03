@@ -28,6 +28,8 @@ class SharedParameters {
     await changeidUser(Globals.idUser);
     await changeTokenAuth(Globals.tokenAuth);
 
+    await changeIdAnecdateLike(Globals.idAnecdateLike);
+
     await pref!.setBool("quizzMode", Globals.quizzMode);
 
     await pref!.setBool("darkTheme", Globals.darkTheme);
@@ -59,6 +61,8 @@ class SharedParameters {
       Globals.userName = (pref!.getString("userName"))!;
       Globals.idUser = (pref!.getInt("idUser"))!;
       Globals.tokenAuth = (pref!.getString("tokenAuth"))!;
+
+      Globals.idAnecdateLike = jsonDecode(pref!.getString("idAnecdateLike")!);
 
       Globals.quizzMode = (pref!.getBool("quizzMode"))!;
 
@@ -132,6 +136,11 @@ class SharedParameters {
 
   static Future<void> changeTokenAuth(String tokenAuth) async {
     await pref!.setString("tokenAuth", tokenAuth);
+  }
+
+  static Future<void> changeIdAnecdateLike(List<dynamic> list) async {
+    String json = jsonEncode(list);
+    await pref!.setString("idAnecdateLike", json);
   }
 
   static Future<void> changeDaysNotif(Map<String, dynamic> map) async {

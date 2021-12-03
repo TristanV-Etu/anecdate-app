@@ -1,16 +1,24 @@
 import 'package:anecdate_app/utils/api.dart';
+import 'package:anecdate_app/utils/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:anecdate_app/utils/utils.dart';
 
 class LoginPage extends StatefulWidget {
+
+  String username;
+
+
+  LoginPage({this.username = ""});
+
   @override
-  LoginPageState createState() => LoginPageState();
+  LoginPageState createState() => LoginPageState(username);
 }
 
 class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _username;
   late TextEditingController _password;
+  String username;
   bool _obscureText = true;
   var _currentFocus;
 
@@ -22,10 +30,14 @@ class LoginPageState extends State<LoginPage> {
     }
   }
 
+
+  LoginPageState(this.username);
+
   @override
   void initState() {
     super.initState();
     _username = TextEditingController();
+    _username.text = username;
     _password = TextEditingController();
   }
 
@@ -98,9 +110,9 @@ class LoginPageState extends State<LoginPage> {
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                login(_username.text, cryptPassword(_password.text), context);
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Connexion en cours...")));
+                login(_username.text, cryptPassword(_password.text), context);
               }
             },
             child: Text("Se connecter"),

@@ -1,16 +1,13 @@
-import 'package:anecdate_app/utils/shared_paramaters.dart';
+import 'package:anecdate_app/model/anecdate.dart';
+import 'package:anecdate_app/utils/shared_parameters.dart';
 
-class Globals{
-
+class Globals {
   static const String apiIP = "15.188.56.39";
   static const String apiPort = "8080";
 
-  static String getApiAdresse() => apiIP+":"+apiPort;
+  static String getApiAdresse() => apiIP + ":" + apiPort;
 
   static const String nameApp = "Anec'Date";
-
-
-
 
   // USER
 
@@ -19,6 +16,10 @@ class Globals{
   static int idUser = -1;
   static String tokenAuth = "";
 
+  static List<Anecdate> currentsAnecdatesList = [];
+  static int currentAnecdateIndex = 0;
+
+  static List<dynamic> idAnecdateLike = [];
 
   static bool quizzMode = false;
 
@@ -32,13 +33,23 @@ class Globals{
   static bool activeNotif = true;
   static int hourNotif = 7;
   static int minuteNotif = 30;
-  static Map<String, dynamic> choiceDays = {"Lundi": false, "Mardi": false, "Mercredi": false, "Jeudi": false, "Vendredi": false, "Samedi": false, "Dimanche": false };
-
+  static Map<String, dynamic> choiceDays = {
+    "Lundi": false,
+    "Mardi": false,
+    "Mercredi": false,
+    "Jeudi": false,
+    "Vendredi": false,
+    "Samedi": false,
+    "Dimanche": false
+  };
 
   static Future<void> pushPreferences() async {
     await SharedParameters.pref!.setBool("isConnect", isConnect);
     await SharedParameters.changeUserName(userName);
+    await SharedParameters.changeidUser(idUser);
     await SharedParameters.changeTokenAuth(tokenAuth);
+
+    await SharedParameters.changeIdAnecdateLike(idAnecdateLike);
 
     await SharedParameters.pref!.setBool("quizzMode", quizzMode);
 

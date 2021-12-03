@@ -8,6 +8,7 @@ class DeepthPageTransformer extends PageTransformer {
   Widget transform(Widget child, TransformInfo info) {
     double? position = info.position;
     if (position! <= 0) {
+
       return Opacity(
         opacity: 1.0,
         child: Transform.translate(

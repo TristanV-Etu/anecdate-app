@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 import 'package:anecdate_app/utils/globals.dart';
-import 'package:anecdate_app/widgets/about_page.dart';
-import 'package:anecdate_app/widgets/categories_page.dart';
+import 'package:anecdate_app/widgets/pages/about_page.dart';
+import 'package:anecdate_app/widgets/pages/account_info_page.dart';
+import 'package:anecdate_app/widgets/pages/categories_page.dart';
 import 'package:anecdate_app/widgets/connection.dart';
-import 'package:anecdate_app/widgets/settings_page.dart';
-import 'package:anecdate_app/widgets/tuto_page.dart';
+import 'package:anecdate_app/widgets/pages/list_anecdate_user_page.dart';
+import 'package:anecdate_app/widgets/pages/settings_page.dart';
+import 'package:anecdate_app/widgets/pages/tuto_page.dart';
 import 'package:flutter/material.dart';
 
-import 'add_anecdate_page.dart';
+import 'pages/add_anecdate_page.dart';
 
 class NavDrawer extends StatefulWidget {
   @override
@@ -29,7 +31,7 @@ class NavDrawerState extends State<NavDrawer> {
     "Réglages",
     "Aide",
     "A propos"
-];
+  ];
 
   final List<Icon> _icons = [
     const Icon(Icons.menu),
@@ -49,10 +51,10 @@ class NavDrawerState extends State<NavDrawer> {
   @override
   Widget build(BuildContext context) {
     _functions = [
-      _print1,
+      _goToAccountPage,
       _print2,
-      _print3,
-      _deconnection,
+      _goToAnecdatesPage,
+      deconnection,
       _goToCategoriesPage,
       _goToAddAnecdatePage,
       _goToSettingsPage,
@@ -69,15 +71,15 @@ class NavDrawerState extends State<NavDrawer> {
     List<Widget> list = [];
     int i = 0;
 
-    if (! Globals.isConnect) {
+    if (!Globals.isConnect) {
       _addConnectPart(list);
       i = 4;
     } else {
-      list.add(_createTile(Globals.userName, _icons[0], (){}));
+      list.add(_createTile(Globals.userName, _icons[0], () {}));
       list.add(const Divider());
     }
 
-    for(; i < _strings.length; i++) {
+    for (; i < _strings.length; i++) {
       if (i == 4 || i == 6) {
         list.add(const Divider());
       }
@@ -102,14 +104,14 @@ class NavDrawerState extends State<NavDrawer> {
         _createTile(_strings[0], _icons[0], _functions[0])
     );
     list.add(
-        _createConnectButton("Connexion", (){
+        _createConnectButton("Connexion", () {
           _pop();
           Navigator.push(_ctx,
               MaterialPageRoute(builder: (context) => LoginPage()));
         })
     );
     list.add(
-        _createConnectButton("Se connecter", (){
+        _createConnectButton("Se connecter", () {
           _pop();
           Navigator.push(_ctx,
               MaterialPageRoute(builder: (context) => SignUpPage()));
@@ -132,27 +134,38 @@ class NavDrawerState extends State<NavDrawer> {
     );
   }
 
-  void _pop(){
+  void _pop() {
     Navigator.pop(_ctx);
+  }
+
+  void _goToAccountPage() {
+    if (Globals.isConnect) {
+      _pop();
+      Navigator.push(_ctx,
+          MaterialPageRoute(builder: (context) => AccountInfoPage())
+      );
+    }
+  }
+
+  void _goToAnecdatesPage() {
+    _pop();
+    Navigator.push(_ctx,
+      MaterialPageRoute(builder: (context) => ListAnecdateFromUserPage())
+    );
   }
 
   void _goToCategoriesPage() {
     _pop();
     Navigator.push(_ctx,
-        TransparentRoute(builder: (context) => CategoriesPage())
+        MaterialPageRoute(builder: (context) => CategoriesPage())
     );
   }
 
   void _goToAddAnecdatePage() {
-    if (Globals.isConnect) {_pop();
-    Navigator.push(_ctx,
-        MaterialPageRoute(builder: (context) => AddAnecdatePage())
-    );
-    } else
-    {
+    if (Globals.isConnect) {
       _pop();
       Navigator.push(_ctx,
-          MaterialPageRoute(builder: (context) => SignUpPage())
+          MaterialPageRoute(builder: (context) => AddAnecdatePage())
       );
     }
   }
@@ -178,19 +191,20 @@ class NavDrawerState extends State<NavDrawer> {
     );
   }
 
-  void _deconnection() {
+
+  void _print2() {
+    print(2);
     _pop();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Vous vous êtes déconnecté.")));
+  }
+
+  void deconnection() {
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Vous avez été déconnecté.")));
     Globals.userName = "";
     Globals.isConnect = false;
     Globals.idUser = -1;
     Globals.tokenAuth = "";
     Globals.pushPreferences();
   }
-
-
-
-  void _print1(){print(1);_pop();}
-  void _print2(){print(2);_pop();}
-  void _print3(){print(3);_pop();}
 }
