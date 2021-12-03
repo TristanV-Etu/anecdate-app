@@ -39,11 +39,12 @@ class SharedParameters {
     await changeDaysNotif(Globals.choiceDays);
 
     List<dynamic> categories = await getAllCategories();
+    print(categories);
     Map<String, dynamic> choiceCategories = {};
     Map<String, dynamic> idsCategories = {};
     for (var category in categories) {
       if (category["status"] == "active") {
-        choiceCategories[category["name"]] = false;
+        choiceCategories[category["name"]] = true;
         idsCategories[category["name"]] = category["id"];
       }
     }
@@ -81,6 +82,7 @@ class SharedParameters {
       Map<String, dynamic> choiceCategories = jsonDecode(pref!.getString("choiceCategories")!);
       Map<String, dynamic> idsCategories = jsonDecode(pref!.getString("idsCategories")!);
       List<dynamic> categories = await getAllCategories();
+      print(categories);
 
       if (categories.length != choiceCategories.length){
         _reloadCategories(categories, choiceCategories, idsCategories);
@@ -98,7 +100,7 @@ class SharedParameters {
     // List<dynamic> copyCategories = json.decode(json.encode(categories));
     for (var category in categories) {
       if(category["status"] == "active" && choiceCategories.containsKey(category["name"])){
-        choiceCategories[category["name"]] = false;
+        choiceCategories[category["name"]] = true;
         idsCategories[category["name"]] = category["id"];
         // copyCategories.remove(category);
       }

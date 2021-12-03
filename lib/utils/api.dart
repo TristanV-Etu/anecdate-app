@@ -19,8 +19,28 @@ Future<List<dynamic>> getAnecdatesOfTheDay() async {
   return jsonDecode(response.body);
 }
 
-Future<List<dynamic>> getAnecdatesWithCommentsFromUser() async {
-  var response = await http.get(await getUri(path: "/api/anecdate"));
+Future<Map<Anecdate, dynamic>> getQuizzOfTheDay() async {
+  Map<Anecdate, dynamic> result = {};
+  Anecdate temp;
+  var response;
+  List list = await getAnecdatesOfTheDay();
+  for (var element in list) {
+    temp = Anecdate.fromJson(element);
+    if(temp.idQuiz != null) {
+      var response = await http.get(await getUri(path: "/api/anecdate/" + temp.idQuiz.toString() + "/quiz"));
+      result[temp] = jsonDecode(response.body);
+    }
+  }
+  return result;
+}
+
+Future<Map<String, dynamic>> getSpecificAnecdate(int idAnecdate) async {
+  var response = await http.get(await getUri(path: "/api/anecdate/" + idAnecdate.toString()));
+  return jsonDecode(response.body);
+}
+
+Future<List<dynamic>> getCommentsFromUser(int idAuthor) async {
+  var response = await http.get(await getUri(path: "/api/user/" + idAuthor.toString() + "/comments"));
   return jsonDecode(response.body);
 }
 

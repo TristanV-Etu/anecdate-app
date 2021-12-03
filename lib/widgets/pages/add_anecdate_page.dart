@@ -31,7 +31,7 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   late DateTime _selectedDate;
   ImagePicker _picker = ImagePicker();
   File? _imageFile;
-  String _categoryValue = "";
+  late String _categoryValue;
   bool _facultatifDisplay = false;
   var _currentFocus;
 
@@ -46,6 +46,7 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   @override
   void initState() {
     super.initState();
+    _categoryValue = Globals.idsCategories.keys.first;
     _titleCon = TextEditingController();
     _dateCon = TextEditingController();
     _descCon = TextEditingController();
@@ -297,7 +298,6 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
         child: Text(value),
       );
     }).toList();
-    _categoryValue = items[0].value!;
     return SizedBox(
       width: _size.width,
       child: Padding(

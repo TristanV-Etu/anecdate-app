@@ -12,7 +12,7 @@ class Anecdate {
   final int idCategory;
   final String description;
   final String sources;
-  final int? idQuizz;
+  final int? idQuiz;
   final DateTime creationDate;
   int likes;
   int dislikes;
@@ -27,7 +27,7 @@ class Anecdate {
       required this.idCategory,
       required this.description,
       required this.sources,
-      this.idQuizz,
+      this.idQuiz,
       required this.creationDate,
       required this.likes,
       required this.dislikes,
@@ -48,7 +48,6 @@ class Anecdate {
   }
 
   void sendLike(){
-    print("add");
     likes += 1;
   }
   void sendDislike(){

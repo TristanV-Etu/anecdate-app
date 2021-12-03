@@ -21,7 +21,7 @@ class Globals {
 
   static List<dynamic> idAnecdateLike = [];
 
-  static bool quizzMode = false;
+  static bool quizzMode = true;
 
   //CATEGORIES
   static Map<String, dynamic> choiceCategories = {};
@@ -34,13 +34,13 @@ class Globals {
   static int hourNotif = 7;
   static int minuteNotif = 30;
   static Map<String, dynamic> choiceDays = {
-    "Lundi": false,
-    "Mardi": false,
-    "Mercredi": false,
-    "Jeudi": false,
-    "Vendredi": false,
-    "Samedi": false,
-    "Dimanche": false
+    "Lundi": true,
+    "Mardi": true,
+    "Mercredi": true,
+    "Jeudi": true,
+    "Vendredi": true,
+    "Samedi": true,
+    "Dimanche": true
   };
 
   static Future<void> pushPreferences() async {

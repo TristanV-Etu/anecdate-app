@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:anecdate_app/utils/globals.dart';
+import 'package:anecdate_app/widgets/connection.dart';
 import 'package:anecdate_app/widgets/pages/about_page.dart';
 import 'package:anecdate_app/widgets/pages/account_info_page.dart';
 import 'package:anecdate_app/widgets/pages/categories_page.dart';
-import 'package:anecdate_app/widgets/connection.dart';
 import 'package:anecdate_app/widgets/pages/list_anecdate_user_page.dart';
+import 'package:anecdate_app/widgets/pages/list_comments_user_page.dart';
+import 'package:anecdate_app/widgets/pages/main_page.dart';
 import 'package:anecdate_app/widgets/pages/settings_page.dart';
 import 'package:anecdate_app/widgets/pages/tuto_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'pages/add_anecdate_page.dart';
 
@@ -20,7 +25,6 @@ class NavDrawer extends StatefulWidget {
 }
 
 class NavDrawerState extends State<NavDrawer> {
-
   final List<String> _strings = [
     "Mon compte",
     "Commentaires",
@@ -49,10 +53,15 @@ class NavDrawerState extends State<NavDrawer> {
   late List<Function> _functions;
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _functions = [
       _goToAccountPage,
-      _print2,
+      _goToCommentsPage,
       _goToAnecdatesPage,
       deconnection,
       _goToCategoriesPage,
@@ -86,6 +95,8 @@ class NavDrawerState extends State<NavDrawer> {
       list.add(_createTile(_strings[i], _icons[i], _functions[i]));
     }
 
+    list.add(_createQuizButton());
+
     return list;
   }
 
@@ -100,37 +111,54 @@ class NavDrawerState extends State<NavDrawer> {
   }
 
   List<Widget> _addConnectPart(List<Widget> list) {
-    list.add(
-        _createTile(_strings[0], _icons[0], _functions[0])
-    );
-    list.add(
-        _createConnectButton("Connexion", () {
-          _pop();
-          Navigator.push(_ctx,
-              MaterialPageRoute(builder: (context) => LoginPage()));
-        })
-    );
-    list.add(
-        _createConnectButton("Se connecter", () {
-          _pop();
-          Navigator.push(_ctx,
-              MaterialPageRoute(builder: (context) => SignUpPage()));
-        })
-    );
+    list.add(_createTile(_strings[0], _icons[0], _functions[0]));
+    list.add(_createConnectButton("Connexion", () {
+      _pop();
+      Navigator.push(
+          _ctx, MaterialPageRoute(builder: (context) => LoginPage()));
+    }));
+    list.add(_createConnectButton("Se connecter", () {
+      _pop();
+      Navigator.push(
+          _ctx, MaterialPageRoute(builder: (context) => SignUpPage()));
+    }));
     return list;
   }
 
   ListTile _createConnectButton(String text, Function f) {
     return ListTile(
+      title: Text(text),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.horizontal(right: Radius.circular(300)),
-
       ),
       tileColor: Colors.white,
       focusColor: Colors.redAccent,
       onTap: () {
         f.call();
       },
+    );
+  }
+
+  ListTile _createQuizButton() {
+    return ListTile(
+      title: Text("Mode quiz"),
+      subtitle: Switch(
+        value: Globals.quizzMode,
+        onChanged: (value) {
+          setState(() {
+            Globals.quizzMode = value;
+            Globals.pushPreferences();
+            _pop();
+            Navigator.pushReplacement(_ctx, MaterialPageRoute(builder: (builder) => MainPage()));
+          });
+        },
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(300)),
+      ),
+      tileColor: Colors.white,
+      focusColor: Colors.redAccent,
+      onTap: () {},
     );
   }
 
@@ -141,66 +169,57 @@ class NavDrawerState extends State<NavDrawer> {
   void _goToAccountPage() {
     if (Globals.isConnect) {
       _pop();
-      Navigator.push(_ctx,
-          MaterialPageRoute(builder: (context) => AccountInfoPage())
-      );
+      Navigator.push(
+          _ctx, MaterialPageRoute(builder: (context) => AccountInfoPage()));
     }
+  }
+
+  void _goToCommentsPage() {
+    _pop();
+    Navigator.push(_ctx,
+        MaterialPageRoute(builder: (context) => ListCommentsFromUserPage()));
   }
 
   void _goToAnecdatesPage() {
     _pop();
     Navigator.push(_ctx,
-      MaterialPageRoute(builder: (context) => ListAnecdateFromUserPage())
-    );
+        MaterialPageRoute(builder: (context) => ListAnecdateFromUserPage()));
   }
 
   void _goToCategoriesPage() {
     _pop();
-    Navigator.push(_ctx,
-        MaterialPageRoute(builder: (context) => CategoriesPage())
-    );
+    Navigator.push(
+        _ctx, MaterialPageRoute(builder: (context) => CategoriesPage()));
   }
 
   void _goToAddAnecdatePage() {
     if (Globals.isConnect) {
       _pop();
-      Navigator.push(_ctx,
-          MaterialPageRoute(builder: (context) => AddAnecdatePage())
-      );
+      Navigator.push(
+          _ctx, MaterialPageRoute(builder: (context) => AddAnecdatePage()));
     }
   }
 
   void _goToSettingsPage() {
     _pop();
-    Navigator.push(_ctx,
-        MaterialPageRoute(builder: (context) => SettingsPage())
-    );
+    Navigator.push(
+        _ctx, MaterialPageRoute(builder: (context) => SettingsPage()));
   }
 
   void _goToTutoPage() {
     _pop();
-    Navigator.push(_ctx,
-        TransparentRoute(builder: (context) => TutoPage())
-    );
+    Navigator.push(_ctx, TransparentRoute(builder: (context) => TutoPage()));
   }
 
   void _goToAboutPage() {
     _pop();
-    Navigator.push(_ctx,
-        MaterialPageRoute(builder: (context) => AboutPage())
-    );
-  }
-
-
-  void _print2() {
-    print(2);
-    _pop();
+    Navigator.push(_ctx, MaterialPageRoute(builder: (context) => AboutPage()));
   }
 
   void deconnection() {
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Vous avez été déconnecté.")));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Vous avez été déconnecté.")));
     Globals.userName = "";
     Globals.isConnect = false;
     Globals.idUser = -1;

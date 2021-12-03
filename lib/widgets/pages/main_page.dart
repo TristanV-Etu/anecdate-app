@@ -5,6 +5,7 @@ import 'package:anecdate_app/utils/shared_parameters.dart';
 import 'package:anecdate_app/widgets/app_bar.dart';
 import 'package:anecdate_app/widgets/dependancies/build_transformer.dart';
 import 'package:anecdate_app/widgets/nav_menu.dart';
+import 'package:anecdate_app/widgets/pages/quiz_card.dart';
 import 'package:anecdate_app/widgets/pages/standard_card.dart';
 import 'package:another_transformer_page_view/another_transformer_page_view.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     _ctx = context;
+    getQuizzOfTheDay();
     return _createScaffold();
   }
 
@@ -47,21 +49,42 @@ class MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: CustomAppBar(),
       drawer: NavDrawer(),
-      body: FutureBuilder<List<Anecdate>>(
-          future: _getAnecdates(),
+      body: _createFutureBuilder(),
+    );
+  }
+
+  FutureBuilder _createFutureBuilder(){
+    if(!Globals.quizzMode) {
+      return FutureBuilder<List<Anecdate>>(
+        future: _getAnecdates(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else if (!snapshot.hasData) {
+            return _createNoAnecdatePage();
+          } else if (snapshot.connectionState == ConnectionState.done) {
+            return _createCards(snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Text("Une erreur est survenue.");
+          }
+          return const CircularProgressIndicator();
+        });
+    } else {
+      return FutureBuilder<Map<Anecdate, dynamic>>(
+          future: _getQuizAnecdates(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             } else if (!snapshot.hasData) {
               return _createNoAnecdatePage();
             } else if (snapshot.connectionState == ConnectionState.done) {
-              return _createCards(snapshot.data!);
+              return _createQuizzCards(snapshot.data!);
             } else if (snapshot.hasError) {
               return Text("Une erreur est survenue.");
             }
             return const CircularProgressIndicator();
-          }),
-    );
+          });
+    }
   }
 
   Widget _createCards(List<Anecdate> anecdates) {
@@ -106,6 +129,68 @@ class MainPageState extends State<MainPage> {
     );
   }
 
+
+  Widget _createQuizzCards(Map<Anecdate, dynamic> anecdates) {
+    return Swipe(
+      onSwipeLeft: () {
+        swipeLeftRight(like: false);
+      },
+      onSwipeRight: () {
+        swipeLeftRight(like: true);
+      },
+      child: Column(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: MediaQuery.of(_ctx).size.width,
+            height: MediaQuery.of(_ctx).size.height * 0.8,
+            child: _createQuizzSwiper(anecdates),
+          ),
+          TextButton(
+              onPressed: () {
+                //cardsController.nextPage(duration: Duration(milliseconds: 800), curve: Curves.ease);
+              },
+              child: Text("Test")),
+        ],
+      ),
+    );
+  }
+
+  TransformerPageView _createQuizzSwiper(Map<Anecdate, dynamic> anecdates) {
+    return TransformerPageView(
+      //pageController: cardsController,
+      onPageChanged: (index) {
+        Globals.currentAnecdateIndex = index!;
+      },
+      loop: true,
+      scrollDirection: Axis.vertical,
+      transformer: DeepthPageTransformer(),
+      itemBuilder: (BuildContext context, int index) {
+        Anecdate anecdate = anecdates.keys.toList()[index];
+        Map<String, String> cleanMap = _createCleanMap(anecdates[anecdate][0]);
+        return QuizCard(anecdate, cleanMap, _shuffleChoices(cleanMap));
+      },
+      itemCount: anecdates.length,
+    );
+  }
+
+  Map<String, String> _createCleanMap(Map<String, dynamic> map){
+    Map<String, String> result = {};
+    result["question"] = map["question"];
+    result["true_answer"] = map["true_answer"];
+    result["wrong_answer1"] = map["wrong_answer1"];
+    result["wrong_answer2"] = map["wrong_answer2"];
+    result["wrong_answer3"] = map["wrong_answer3"];
+    return result;
+  }
+
+  List<String> _shuffleChoices(Map<String, String> map){
+    List<String> result = map.keys.toList();
+    result.remove("question");
+    result.shuffle();
+    return result;
+}
+
   Future<List<Anecdate>> _getAnecdates() async {
     List<Anecdate> anecdates = [];
     Anecdate temp;
@@ -118,12 +203,19 @@ class MainPageState extends State<MainPage> {
     return anecdates;
   }
 
+  Future<Map<Anecdate,dynamic>> _getQuizAnecdates() async {
+    Map<Anecdate, dynamic> anecdates = await getQuizzOfTheDay();
+    for (var element in anecdates.keys) {
+      Globals.currentsAnecdatesList.add(element);
+    }
+    return anecdates;
+  }
+
   Widget _createNoAnecdatePage() {
     return Text("Il n'y a aucune Anecdate aujourd'hui.");
   }
 
   void swipeLeftRight({like = true}) {
-    print(Globals.idAnecdateLike);
     Anecdate anecdate =
         Globals.currentsAnecdatesList[Globals.currentAnecdateIndex];
     if (Globals.isConnect && !Globals.idAnecdateLike.contains(anecdate.id)) {
