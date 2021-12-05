@@ -9,7 +9,6 @@ class CustomAppBar extends AppBar{
     return AppBar(
       title: const Text( Globals.nameApp ),
 
-
       // leading: IconButton(
       //   onPressed: () {
       //     print("menu");

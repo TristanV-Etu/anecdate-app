@@ -1,6 +1,8 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:anecdate_app/model/anecdate.dart';
 import 'package:anecdate_app/utils/api.dart';
 import 'package:anecdate_app/utils/globals.dart';
+import 'package:anecdate_app/utils/notification_system.dart';
 import 'package:anecdate_app/utils/shared_parameters.dart';
 import 'package:anecdate_app/widgets/app_bar.dart';
 import 'package:anecdate_app/widgets/dependancies/build_transformer.dart';
@@ -30,7 +32,13 @@ class MainPageState extends State<MainPage> {
     SharedParameters.initializePreference().whenComplete(() {
       setState(() {});
     });
+    NotificationSystem.init();
+    listenNotifications();
   }
+
+  void listenNotifications() => NotificationSystem.onNotifications.stream.listen(onClickedNotification);
+
+  void onClickedNotification(String? payload) => Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainPage()));
 
   @override
   void dispose() {
@@ -47,7 +55,9 @@ class MainPageState extends State<MainPage> {
 
   Scaffold _createScaffold() {
     return Scaffold(
-      appBar: CustomAppBar(),
+      appBar: AppBar(
+        title: const Text(Globals.nameApp,textAlign: TextAlign.end,),
+      ),
       drawer: NavDrawer(),
       body: _createFutureBuilder(),
     );
@@ -95,21 +105,12 @@ class MainPageState extends State<MainPage> {
       onSwipeRight: () {
         swipeLeftRight(like: true);
       },
-      child: Column(
-        children: [
-          Container(
+      child: Container(
             alignment: Alignment.center,
             width: MediaQuery.of(_ctx).size.width,
-            height: MediaQuery.of(_ctx).size.height * 0.8,
+            height: MediaQuery.of(_ctx).size.height,
             child: _createSwiper(anecdates),
           ),
-          TextButton(
-              onPressed: () {
-                //cardsController.nextPage(duration: Duration(milliseconds: 800), curve: Curves.ease);
-              },
-              child: Text("Test")),
-        ],
-      ),
     );
   }
 

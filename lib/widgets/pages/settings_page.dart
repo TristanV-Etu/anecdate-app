@@ -1,4 +1,6 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:anecdate_app/utils/globals.dart';
+import 'package:anecdate_app/utils/notification_system.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -33,25 +35,30 @@ class SettingsPageState extends State<SettingsPage> {
                   setState(() {
                     Globals.darkTheme = !Globals.darkTheme;
                     Globals.pushPreferences();
+                    if (Globals.darkTheme){
+                      AdaptiveTheme.of(context).setDark();
+                    } else {
+                      AdaptiveTheme.of(context).setLight();
+                    }
                   });
                 })),
           ],
         ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Mode Swipe:"),
-            Switch(
-                value: Globals.swipeMode,
-                onChanged: ((newBool) {
-                  setState(() {
-                    Globals.swipeMode = !Globals.swipeMode;
-                    Globals.pushPreferences();
-                  });
-                })),
-          ],
-        ),
+        // Row(
+        //   mainAxisSize: MainAxisSize.max,
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     Text("Mode Swipe:"),
+        //     Switch(
+        //         value: Globals.swipeMode,
+        //         onChanged: ((newBool) {
+        //           setState(() {
+        //             Globals.swipeMode = !Globals.swipeMode;
+        //             Globals.pushPreferences();
+        //           });
+        //         })),
+        //   ],
+        // ),
         _createDaysChoice(),
       ],
     );
@@ -68,6 +75,12 @@ class SettingsPageState extends State<SettingsPage> {
                 setState(() {
                   Globals.activeNotif = !Globals.activeNotif;
                   Globals.pushPreferences();
+
+                  if (Globals.activeNotif) {
+                    NotificationSystem.subscribeNotification();
+                  } else {
+                    NotificationSystem.cancelAll();
+                  }
                 });
               })),
         ],
@@ -86,6 +99,10 @@ class SettingsPageState extends State<SettingsPage> {
               setState(() {
                 Globals.choiceDays[key] = newBool ?? false;
                 Globals.pushPreferences();
+                if (Globals.activeNotif) {
+                  NotificationSystem.cancelAll();
+                  NotificationSystem.subscribeNotification();
+                }
               });
             }),
         Text(key),
@@ -108,6 +125,10 @@ class SettingsPageState extends State<SettingsPage> {
         Globals.hourNotif = newTime.hour;
         Globals.minuteNotif = newTime.minute;
         Globals.pushPreferences();
+        if (Globals.activeNotif) {
+          NotificationSystem.cancelAll();
+          NotificationSystem.subscribeNotification();
+        }
       });
     }
   }

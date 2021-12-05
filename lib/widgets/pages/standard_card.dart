@@ -30,37 +30,70 @@ class StandardCard extends Card {
           child: Card(
             elevation: 8,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  anecdate.date.day.toString() +
-                      " / " +
-                      anecdate.date.month.toString(),
+                Container(
+                  width: _size.width * 0.45,
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 2),
+                      borderRadius: BorderRadius.all(Radius.circular(14))),
+                  child: Center(
+                    child: Container(
+                      width: _size.width * 0.45,
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 2),
+                          borderRadius: BorderRadius.all(Radius.circular(12))),
+                      child: Center(
+                        child: Text(
+                          anecdate.date.day.toString() +
+                              " / " +
+                              anecdate.date.month.toString(),
+                          style: Theme.of(context).textTheme.headline2,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 Stack(
-                  alignment: Alignment.bottomLeft,
+                  alignment: Alignment.topLeft,
                   children: [
                     Center(
                       child: Image.network(
                         anecdate.image!,
-                        height: _size.height * 0.2,
+                        height: _size.height * 0.25,
                         width: _size.width,
                         fit: BoxFit.cover,
                       ),
                     ),
-                    Text(anecdate.date.year.toString()),
+                    Padding(
+                      padding: EdgeInsets.only(top: _size.height * 0.202),
+                      child: Text(
+                        anecdate.date.year.toString(),
+                        style: Theme.of(context).textTheme.headline3,
+                      ),
+                    ),
                   ],
                 ),
-                Padding(
-                  child: Text(anecdate.title),
-                  padding: const EdgeInsets.all(20),
+                Center(
+                  child: Padding(
+                    child: Text(
+                      anecdate.title,
+                      style: Theme.of(context).textTheme.headline4,
+                      textAlign: TextAlign.center,
+                    ),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                  ),
                 ),
                 const Divider(),
                 Padding(
                   child: Text(
                     anecdate.description,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    maxLines: 8,
                     overflow: TextOverflow.ellipsis,
                   ),
                   padding: const EdgeInsets.all(16),

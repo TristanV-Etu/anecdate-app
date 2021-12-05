@@ -61,7 +61,9 @@ class DetailsPageState extends State<DetailsPage> {
     return GestureDetector(
       onTap: _unfocus,
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text("Détails"),
+        ),
         body: SingleChildScrollView(
           child: _createCard(),
         ),
@@ -79,7 +81,7 @@ class DetailsPageState extends State<DetailsPage> {
           child: Card(
             elevation: 8,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: _createChildren(),
@@ -101,36 +103,104 @@ class DetailsPageState extends State<DetailsPage> {
 
   void _addDetails(List<Widget> list) {
     list.addAll([
-      Row(children: [
-        Text(anecdate.date.day.toString() +
-            " / " +
-            anecdate.date.month.toString()),
-        Spacer(),
-        Text("Lik:" + anecdate.likes.toString()),
-        Text("Dis:" + anecdate.dislikes.toString()),
-      ]),
+      Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Container(
+              width: _size.width * 0.45,
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  borderRadius: BorderRadius.all(Radius.circular(14))),
+              child: Center(
+                child: Container(
+                  width: _size.width * 0.45,
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 2),
+                      borderRadius: BorderRadius.all(Radius.circular(12))),
+                  child: Center(
+                    child: Text(
+                      anecdate.date.day.toString() +
+                          " / " +
+                          anecdate.date.month.toString(),
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          //Spacer(),
+          Column(
+            children: [
+              Container(
+                width: 100,
+                height: 30,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  verticalDirection: VerticalDirection.down,
+                  children: [
+                    const Icon(Icons.thumb_up_alt_sharp),
+                    Text("   " + anecdate.likes.toString()),
+                  ],
+                ),
+              ),
+              Container(
+                width: 100,
+                height: 30,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  verticalDirection: VerticalDirection.down,
+                  children: [
+                    const Icon(Icons.thumb_down_alt_sharp),
+                    Text("   " + anecdate.dislikes.toString()),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
       Stack(
-        alignment: Alignment.bottomLeft,
+        alignment: Alignment.topLeft,
         children: [
           Center(
             child: Image.network(
               anecdate.image!,
-              height: _size.height * 0.2,
+              height: _size.height * 0.25,
               width: _size.width,
               fit: BoxFit.cover,
             ),
           ),
-          Text(anecdate.date.year.toString()),
+          Padding(
+            padding: EdgeInsets.only(top: _size.height * 0.202),
+            child: Text(
+              anecdate.date.year.toString(),
+              style: Theme.of(context).textTheme.headline3,
+            ),
+          ),
         ],
       ),
-      Padding(
-        child: Text(anecdate.title),
-        padding: const EdgeInsets.all(20),
+      Center(
+        child: Padding(
+          child: Text(
+            anecdate.title,
+            style: Theme.of(context).textTheme.headline4,
+            textAlign: TextAlign.center,
+          ),
+          padding:
+              const EdgeInsets.only(left: 20, top: 10, right: 20, bottom: 10),
+        ),
       ),
       const Divider(),
       Padding(
         child: Text(
           anecdate.description,
+          style: Theme.of(context).textTheme.bodyText2,
         ),
         padding: const EdgeInsets.all(16),
       ),
@@ -140,17 +210,43 @@ class DetailsPageState extends State<DetailsPage> {
   void _addSources(List<Widget> list) {
     list.addAll([
       Divider(),
-      Text("Source(s) :"),
+      Padding(
+        padding: EdgeInsets.all(10),
+        child: Text(
+          "Source(s) :",
+          style: Theme.of(context).textTheme.headline4,
+        ),
+      ),
     ]);
     anecdate.getSources().forEach((element) {
-      list.add(InkWell(child: Text(element), onTap: () => launch(element)));
+      list.add(
+        Padding(
+          padding: EdgeInsets.only(top: 4, bottom: 4, left: 10, right: 10),
+          child: Center(
+            child: InkWell(
+              child: Text(
+                element,
+                style: Theme.of(context).textTheme.subtitle1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              onTap: () => launch(element),
+            ),
+          ),
+        ),
+      );
     });
   }
 
   void _addComments(List<Widget> list) {
     list.addAll([
       Divider(),
-      Text("Commentaire(s) :"),
+      Padding(
+        padding: EdgeInsets.all(10),
+        child: Text(
+          "Commentaire(s) :",
+          style: Theme.of(context).textTheme.headline4,
+        ),
+      ),
     ]);
     if (Globals.isConnect) {
       list.add(_postCommentBloc());

@@ -8,9 +8,9 @@ class Globals {
   static String getApiAdresse() => apiIP + ":" + apiPort;
 
   static const String nameApp = "Anec'Date";
+  static const String appMessage = "C'est l'heure de votre culture journalière !";
 
   // USER
-
   static bool isConnect = false;
   static String userName = "";
   static int idUser = -1;
@@ -21,7 +21,7 @@ class Globals {
 
   static List<dynamic> idAnecdateLike = [];
 
-  static bool quizzMode = true;
+  static bool quizzMode = false;
 
   //CATEGORIES
   static Map<String, dynamic> choiceCategories = {};
@@ -30,6 +30,8 @@ class Globals {
   //SETTINGS
   static bool darkTheme = false;
   static bool swipeMode = true;
+
+  //NOTIFICATIONS
   static bool activeNotif = true;
   static int hourNotif = 7;
   static int minuteNotif = 30;
@@ -42,6 +44,25 @@ class Globals {
     "Samedi": true,
     "Dimanche": true
   };
+  static Map<String, int> datetimeDays = {
+    "Lundi": DateTime.monday,
+    "Mardi": DateTime.tuesday,
+    "Mercredi": DateTime.wednesday,
+    "Jeudi": DateTime.thursday,
+    "Vendredi": DateTime.friday,
+    "Samedi": DateTime.saturday,
+    "Dimanche": DateTime.sunday
+  };
+
+  static List<int> getDaysNotifications() {
+    List<int> result = [];
+    choiceDays.forEach((key, value) {
+      if (value) {
+        result.add(datetimeDays[key]!);
+      }
+    });
+    return result;
+  }
 
   static Future<void> pushPreferences() async {
     await SharedParameters.pref!.setBool("isConnect", isConnect);
