@@ -4,11 +4,21 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: Text("A propos"),),
       body: SingleChildScrollView(
-        child: Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ullamcorper sed metus ut gravida. Vestibulum posuere quis diam id porta. Nunc porta fringilla turpis non viverra. In porttitor mauris elit, sit amet tincidunt sapien tempus ut. Vestibulum aliquam libero eu egestas lobortis. Fusce nulla metus, malesuada at sodales et, efficitur a nibh. Ut at sodales mauris, sed pharetra ante. Pellentesque tempor sit amet leo accumsan consectetur. Quisque pellentesque neque varius dapibus sagittis. Mauris blandit in mi vel convallis. Proin lectus quam, pharetra vitae sollicitudin vitae, fermentum nec justo. Aliquam in nunc interdum, vulputate nunc fringilla, consequat mi. Aliquam sit amet rhoncus augue. Suspendisse ullamcorper luctus enim, id ullamcorper lectus. Quisque at enim vel nisl aliquam volutpat ut at neque. Cras eu metus et felis commodo laoreet. Mauris porttitor ultrices lectus, ut dapibus diam semper eu. Pellentesque malesuada dapibus dolor, eu aliquet sapien semper a. Fusce eget tortor ut ante porta tempor. Donec tristique lorem vitae tortor dapibus, eu commodo purus feugiat. Suspendisse vestibulum consectetur elit, id finibus ipsum tempor in. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec et dui lorem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas vel lacus id dui accumsan finibus a at turpis. Aliquam posuere non felis eu tempus. Integer viverra dolor quis purus molestie, ut euismod odio faucibus. Sed id dignissim leo. Sed vel dapibus arcu, a placerat est. Sed aliquam finibus rutrum. Integer dictum bibendum metus, id tempus mauris rutrum eget. Nullam ac placerat orci. Mauris at ultricies enim, at sodales neque. Pellentesque venenatis ipsum nec pellentesque ultrices. Cras ac tortor lobortis, pulvinar magna ornare, viverra lorem. Nullam consectetur augue eget magna euismod, in vulputate ipsum elementum. Donec gravida mi nec tincidunt mollis. Phasellus venenatis, diam ut vulputate consequat, ex est lobortis erat, eu accumsan magna diam et lacus. Quisque blandit, dolor sed dignissim mattis, leo urna rutrum velit, non tincidunt dui mauris ut purus. Ut in viverra ligula, sed dictum magna. Vestibulum quis blandit dui, maximus iaculis dui. Nullam viverra mi in vestibulum placerat. Sed in metus vel metus fringilla malesuada. Nullam faucibus sagittis euismod. In aliquet, nibh eu commodo lobortis, elit enim dictum tortor, quis consectetur est lacus eu nisi. Ut nec sagittis mauris. Praesent non tortor iaculis magna ullamcorper euismod. Ut nec euismod sem. Suspendisse a dolor vel erat egestas lobortis vitae eu sem. Suspendisse sit amet orci at velit congue tincidunt at at felis. Sed in tellus sodales lectus varius tincidunt non a dui. Pellentesque finibus sem nec elit faucibus maximus. Aliquam congue et lectus id vestibulum. Duis augue mi, bibendum sed hendrerit quis, dictum ut leo. Aenean suscipit nunc a justo facilisis mattis. Sed in dolor nec lacus congue dignissim porta eu mi. Pellentesque at tortor aliquam, viverra ante sed, dictum eros. Suspendisse dictum sodales aliquet. Integer fringilla sem et congue interdum. Fusce blandit tortor sit amet tincidunt suscipit. Donec condimentum imperdiet pellentesque. Maecenas venenatis sapien elit, nec congue orci feugiat non. Donec dignissim magna in leo consectetur feugiat."),
-      )
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                "Cette application a été réalisé par des étudiants dans le cadre du projet Platine du Master E-Services du pôle Informatique de l'Université de Lille.\n\n" +
+                    "PERSEVAL Alexandre\nVALET Tristan",
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
-
 }
