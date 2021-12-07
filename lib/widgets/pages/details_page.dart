@@ -1,3 +1,4 @@
+import 'package:anecdate_app/main.dart';
 import 'package:anecdate_app/model/anecdate.dart';
 import 'package:anecdate_app/model/comment.dart';
 import 'package:anecdate_app/utils/api.dart';
@@ -9,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../connection.dart';
+import '../nav_menu.dart';
 
 class DetailsPage extends StatefulWidget {
   Anecdate anecdate;
@@ -43,7 +45,6 @@ class DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
-    print(anecdate.likes);
     _commentEdit = TextEditingController();
     _callApiComments();
   }
@@ -166,23 +167,27 @@ class DetailsPageState extends State<DetailsPage> {
         ],
       ),
       Stack(
-        alignment: Alignment.topLeft,
+        alignment: Alignment.bottomLeft,
         children: [
           Center(
             child: Image.network(
               anecdate.image!,
+              errorBuilder: (context, exception, stackTrace) {
+                return Image.asset(
+                  "assets/img/image-not-found.png",
+                  height: _size.height * 0.25,
+                  width: _size.width,
+                  fit: BoxFit.cover,
+                );
+              },
               height: _size.height * 0.25,
               width: _size.width,
               fit: BoxFit.cover,
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: _size.height * 0.202),
-            child: Text(
+          ),Text(
               anecdate.date.year.toString(),
               style: Theme.of(context).textTheme.headline3,
             ),
-          ),
         ],
       ),
       Center(
@@ -201,6 +206,7 @@ class DetailsPageState extends State<DetailsPage> {
         child: Text(
           anecdate.description,
           style: Theme.of(context).textTheme.bodyText2,
+          textAlign: TextAlign.left,
         ),
         padding: const EdgeInsets.all(16),
       ),
@@ -211,10 +217,13 @@ class DetailsPageState extends State<DetailsPage> {
     list.addAll([
       Divider(),
       Padding(
-        padding: EdgeInsets.all(10),
-        child: Text(
-          "Source(s) :",
-          style: Theme.of(context).textTheme.headline4,
+        padding: EdgeInsets.all(16),
+        child: Container(
+          width: _size.width,
+          child: Text(
+            "Source(s) :",
+            style: Theme.of(context).textTheme.headline4,
+          ),
         ),
       ),
     ]);
@@ -226,7 +235,7 @@ class DetailsPageState extends State<DetailsPage> {
             child: InkWell(
               child: Text(
                 element,
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.subtitle2,
                 overflow: TextOverflow.ellipsis,
               ),
               onTap: () => launch(element),
@@ -241,10 +250,13 @@ class DetailsPageState extends State<DetailsPage> {
     list.addAll([
       Divider(),
       Padding(
-        padding: EdgeInsets.all(10),
-        child: Text(
-          "Commentaire(s) :",
-          style: Theme.of(context).textTheme.headline4,
+        padding: EdgeInsets.all(16),
+        child: Container(
+          width: _size.width,
+          child: Text(
+            "Commentaire(s) :",
+            style: Theme.of(context).textTheme.headline4,
+          ),
         ),
       ),
     ]);
@@ -264,7 +276,7 @@ class DetailsPageState extends State<DetailsPage> {
           future: _getComments(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return createWaitProgress();
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Text("Aucun commentaires");
             } else if (snapshot.connectionState == ConnectionState.done) {
@@ -272,7 +284,7 @@ class DetailsPageState extends State<DetailsPage> {
             } else if (snapshot.hasError) {
               return Text("Une erreur est survenue.");
             }
-            return const CircularProgressIndicator();
+            return createWaitProgress();
           }),
     );
   }
@@ -289,31 +301,54 @@ class DetailsPageState extends State<DetailsPage> {
 
   Widget _createCommentBloc(Comment comment) {
     String formattedDate = DateFormat('dd/MM/yyyy').format(comment.date);
-    return Container(
-        color: Colors.cyan,
+    return Padding(
+      padding: EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
+      child: Container(
+        color: Colors.grey.shade400,
         child: Padding(
-            padding: EdgeInsets.all(26),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    FutureBuilder<String>(
-                        future: comment.getAuthorName(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                                  ConnectionState.done &&
-                              snapshot.data!.isNotEmpty) {
-                            return Text("${snapshot.data}");
-                          }
-                          return Text("Anonyme");
-                        }),
-                    Spacer(),
-                    Text(formattedDate),
-                  ],
+          padding: EdgeInsets.only(top: 8, bottom: 12, left: 12, right: 12),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  FutureBuilder<String>(
+                      future: comment.getAuthorName(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done &&
+                            snapshot.data!.isNotEmpty) {
+                          return Text(
+                            "${snapshot.data}",
+                            style: Theme.of(context).textTheme.headline4,
+                          );
+                        }
+                        return Text(
+                          "Anonyme",
+                          style: Theme.of(context).textTheme.headline4,
+                        );
+                      }),
+                  Spacer(),
+                  Text(
+                    formattedDate,
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Container(
+                  width: _size.width,
+                  child: Text(
+                    comment.message,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    textAlign: TextAlign.left,
+                  ),
                 ),
-                Text(comment.message),
-              ],
-            )));
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _createAllcommentsBlocs(List<Comment> comments) {
@@ -330,30 +365,42 @@ class DetailsPageState extends State<DetailsPage> {
     int textLength = 0;
     return Column(
       children: [
-        TextFormField(
-          maxLines: null,
-          controller: _commentEdit,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return "Veuillez entrer un commentaire valide.";
-            } else if (value.length > 255) {
-              textLength = value.length - 255;
-              return "255 caractères maximum. (Il y a $textLength en trop)";
-            }
-            return null;
-          },
+        Padding(
+          padding: EdgeInsets.only(left: 16, right: 16),
+          child: TextFormField(
+            maxLength: 256,
+            maxLines: 3,
+            controller: _commentEdit,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Veuillez entrer un commentaire valide.";
+              } else if (value.length > 256) {
+                textLength = value.length - 256;
+                return "255 caractères maximum. (Il y a $textLength en trop)";
+              }
+              return null;
+            },
+          ),
         ),
-        ElevatedButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              postComment(_commentEdit.text, anecdate.id, context);
-              _commentEdit.text = "";
-              setState(() {
-                _callApiComments();
-              });
-            }
-          },
-          child: Text("Envoyer"),
+        Row(
+          children: [
+            Spacer(),
+            Padding(
+              padding: EdgeInsets.only(right: 16, top: 6, bottom: 12),
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    postComment(_commentEdit.text, anecdate.id, context);
+                    _commentEdit.text = "";
+                    setState(() {
+                      _callApiComments();
+                    });
+                  }
+                },
+                child: Text("ENVOYER"),
+              ),
+            ),
+          ],
         ),
       ],
     );

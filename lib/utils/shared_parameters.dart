@@ -12,7 +12,8 @@ class SharedParameters {
   static Future<void> initializePreference() async {
     pref = await SharedPreferences.getInstance();
 
-    if (pref!.getBool("firstUse") == null) {
+    if (pref!.getBool("alreadyUse") == null) {
+      Globals.firstUse = true;
       await _initializeFirstUse();
     }
     else {
@@ -21,14 +22,20 @@ class SharedParameters {
   }
 
   static Future<void> _initializeFirstUse() async {
-    await pref!.setBool("firstUse", true);
+    await pref!.setBool("alreadyUse", true);
 
     await pref!.setBool("isConnect", Globals.isConnect);
     await changeUserName(Globals.userName);
     await changeidUser(Globals.idUser);
     await changeTokenAuth(Globals.tokenAuth);
 
+    await changeIdQuizAlreadyAnswered(Globals.idQuizAlreadyAnswered);
+
+    await changeSaveUserLikes(Globals.saveUserLikes);
+    await changeSaveUserDislikes(Globals.saveUserDislikes);
+
     await changeIdAnecdateLike(Globals.idAnecdateLike);
+    await changeIdAnecdateLike(Globals.idAnecdateDislike);
 
     await pref!.setBool("quizzMode", Globals.quizzMode);
 
@@ -39,7 +46,6 @@ class SharedParameters {
     await changeDaysNotif(Globals.choiceDays);
 
     List<dynamic> categories = await getAllCategories();
-    print(categories);
     Map<String, dynamic> choiceCategories = {};
     Map<String, dynamic> idsCategories = {};
     for (var category in categories) {
@@ -63,7 +69,13 @@ class SharedParameters {
       Globals.idUser = (pref!.getInt("idUser"))!;
       Globals.tokenAuth = (pref!.getString("tokenAuth"))!;
 
+      Globals.idQuizAlreadyAnswered = jsonDecode(pref!.getString("idQuizAlreadyAnswered")!);
+
+      Globals.saveUserLikes = jsonDecode(pref!.getString("saveUserLikes")!);
+      Globals.saveUserDislikes = jsonDecode(pref!.getString("saveUserDislikes")!);
+
       Globals.idAnecdateLike = jsonDecode(pref!.getString("idAnecdateLike")!);
+      Globals.idAnecdateDislike = jsonDecode(pref!.getString("idAnecdateDislike")!);
 
       Globals.quizzMode = (pref!.getBool("quizzMode"))!;
 
@@ -82,7 +94,6 @@ class SharedParameters {
       Map<String, dynamic> choiceCategories = jsonDecode(pref!.getString("choiceCategories")!);
       Map<String, dynamic> idsCategories = jsonDecode(pref!.getString("idsCategories")!);
       List<dynamic> categories = await getAllCategories();
-      print(categories);
 
       if (categories.length != choiceCategories.length){
         _reloadCategories(categories, choiceCategories, idsCategories);
@@ -145,6 +156,16 @@ class SharedParameters {
     await pref!.setString("idAnecdateLike", json);
   }
 
+  static Future<void> changeIdAnecdateDislike(List<dynamic> list) async {
+    String json = jsonEncode(list);
+    await pref!.setString("idAnecdateDislike", json);
+  }
+
+  static Future<void> changeIdQuizAlreadyAnswered(List<dynamic> list) async {
+    String json = jsonEncode(list);
+    await pref!.setString("idQuizAlreadyAnswered", json);
+  }
+
   static Future<void> changeDaysNotif(Map<String, dynamic> map) async {
     await _factorChangeMapAndKey(map, "choiceDays");
   }
@@ -155,6 +176,14 @@ class SharedParameters {
 
   static Future<void> changeIdsCategories(Map<String, dynamic> map) async {
     await _factorChangeMapAndKey(map, "idsCategories");
+  }
+
+  static Future<void> changeSaveUserLikes(Map<String, dynamic> map) async {
+    await _factorChangeMapAndKey(map, "saveUserLikes");
+  }
+
+  static Future<void> changeSaveUserDislikes(Map<String, dynamic> map) async {
+    await _factorChangeMapAndKey(map, "saveUserDislikes");
   }
 
   static Future<void> _factorChangeMapAndKey(Map map, String key) async {

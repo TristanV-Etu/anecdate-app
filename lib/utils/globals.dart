@@ -5,6 +5,8 @@ class Globals {
   static const String apiIP = "15.188.56.39";
   static const String apiPort = "8080";
 
+  static bool firstUse = false;
+
   static String getApiAdresse() => apiIP + ":" + apiPort;
 
   static const String nameApp = "Anec'Date";
@@ -19,7 +21,13 @@ class Globals {
   static List<Anecdate> currentsAnecdatesList = [];
   static int currentAnecdateIndex = 0;
 
+  static List<dynamic> idQuizAlreadyAnswered = [];
+
+  static Map<String, dynamic> saveUserLikes = {};
+  static Map<String, dynamic> saveUserDislikes = {};
+
   static List<dynamic> idAnecdateLike = [];
+  static List<dynamic> idAnecdateDislike = [];
 
   static bool quizzMode = false;
 
@@ -30,11 +38,12 @@ class Globals {
   //SETTINGS
   static bool darkTheme = false;
   static bool swipeMode = true;
+  static late double sizeFontSystem;
 
   //NOTIFICATIONS
   static bool activeNotif = true;
-  static int hourNotif = 7;
-  static int minuteNotif = 30;
+  static int hourNotif = 12;
+  static int minuteNotif = 0;
   static Map<String, dynamic> choiceDays = {
     "Lundi": true,
     "Mardi": true,
@@ -70,7 +79,13 @@ class Globals {
     await SharedParameters.changeidUser(idUser);
     await SharedParameters.changeTokenAuth(tokenAuth);
 
+    await SharedParameters.changeIdQuizAlreadyAnswered(idQuizAlreadyAnswered);
+
+    await SharedParameters.changeSaveUserLikes(saveUserLikes);
+    await SharedParameters.changeSaveUserDislikes(saveUserDislikes);
+
     await SharedParameters.changeIdAnecdateLike(idAnecdateLike);
+    await SharedParameters.changeIdAnecdateDislike(idAnecdateDislike);
 
     await SharedParameters.pref!.setBool("quizzMode", quizzMode);
 

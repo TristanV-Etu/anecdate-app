@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:anecdate_app/utils/utils.dart';
 
 class LoginPage extends StatefulWidget {
-
   String username;
-
 
   LoginPage({this.username = ""});
 
@@ -29,7 +27,6 @@ class LoginPageState extends State<LoginPage> {
       _currentFocus.unfocus();
     }
   }
-
 
   LoginPageState(this.username);
 
@@ -54,72 +51,130 @@ class LoginPageState extends State<LoginPage> {
       onTap: _unfocus,
       child: Scaffold(
         body: _createBody(context),
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text("Connexion"),
+        ),
       ),
     );
   }
 
   Widget _createBody(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            "Se connecter",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: size.height * 0.03),
-          Text("Pseudo"),
-          TextFormField(
-            controller: _username,
-            validator: (value) {
-              if (!isPseudoValid(value!)) {
-                return "Veuillez entrer un pseudo valide.";
-              }
-              return null;
-            },
-          ),
-          Text("Mot de passe"),
-          TextFormField(
-            controller: _password,
-            obscureText: _obscureText,
-            validator: (value) {
-              if (!isPasswordValid(value!)) {
-                return "Veuillez entrer un mot de passe valide.";
-              }
-              return null;
-            },
-            cursorColor: Colors.redAccent,
-            decoration: InputDecoration(
-              suffixIcon: IconButton(
-                icon: const Icon(
-                  Icons.visibility,
-                  color: Colors.redAccent,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: SizedBox(
+          height: size.height * 0.8,
+          width: size.width,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Image.asset(
+                Globals.darkTheme
+                    ? "assets/img/Anecdate-logo-dark.png"
+                    : "assets/img/Anecdate-logo-light.png",
+                height: 200,
+                width: 200,
+                fit: BoxFit.cover,
               ),
-              border: InputBorder.none,
-            ),
+              SizedBox(
+                width: size.width * 0.9,
+                child: Card(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 20, left: 20),
+                        child: SizedBox(
+                          width: size.width,
+                          child: Text(
+                            "Nom d'utilisateur",
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20, left: 20),
+                        child: TextFormField(
+                          controller: _username,
+                          validator: (value) {
+                            if (!isPseudoValid(value!)) {
+                              return "Veuillez entrer un pseudo valide.";
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10, left: 20),
+                        child: SizedBox(
+                          width: size.width,
+                          child: Text(
+                            "Mot de passe",
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20, left: 20),
+                        child: TextFormField(
+                          controller: _password,
+                          obscureText: _obscureText,
+                          validator: (value) {
+                            if (!isPasswordValid(value!)) {
+                              return "Veuillez entrer un mot de passe valide.";
+                            }
+                            return null;
+                          },
+                          cursorColor: Colors.redAccent,
+                          decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                              icon: const Icon(
+                                Icons.visibility,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width,
+                        child: Row(
+                          children: [
+                            Spacer(),
+                            Padding(
+                              padding: EdgeInsets.all(20),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text("Connexion en cours...")));
+                                    login(_username.text,
+                                        cryptPassword(_password.text), context);
+                                  }
+                                },
+                                child: Text("CONNEXION"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              AlreadyHaveAnAccountCheck(),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Connexion en cours...")));
-                login(_username.text, cryptPassword(_password.text), context);
-              }
-            },
-            child: Text("Se connecter"),
-          ),
-          SizedBox(height: size.height * 0.03),
-          AlreadyHaveAnAccountCheck(),
-        ],
+        ),
       ),
     );
   }
@@ -168,94 +223,173 @@ class SignUpPageState extends State<SignUpPage> {
       onTap: _unfocus,
       child: Scaffold(
         body: _createBody(context),
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text("Inscription"),
+        ),
       ),
     );
   }
 
   Widget _createBody(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            "Se connecter",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: size.height * 0.03),
-          Text("Pseudo"),
-          TextFormField(
-            controller: _username,
-            validator: (value) {
-              if (!isPseudoValid(value!)) {
-                return "Veuillez entrer un pseudo valide.";
-              }
-              return null;
-            },
-          ),
-          Text("Mail"),
-          TextFormField(
-            controller: _mail,
-            validator: (value) {
-              if (!isEmailValid(value!)) {
-                return "Veuillez entrer une adresse mail valide.";
-              }
-              return null;
-            },
-          ),
-          Text("Mot de passe"),
-          TextFormField(
-            controller: _password,
-            obscureText: _obscureText,
-            validator: (value) {
-              if (!isPasswordValid(value!)) {
-                return "Veuillez entrer un mot de passe valide.";
-              }
-              return null;
-            },
-            cursorColor: Colors.redAccent,
-            decoration: InputDecoration(
-              suffixIcon: IconButton(
-                icon: const Icon(
-                  Icons.visibility,
-                  color: Colors.redAccent,
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: SizedBox(
+          width: size.width,
+          height: size.height * 0.8,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              SizedBox(
+                width: size.width * 0.9,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 60),
+                  child: Card(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 20, left: 20),
+                          child: SizedBox(
+                            width: size.width,
+                            child: Text(
+                              "Nom d'utilisateur",
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 20, left: 20),
+                          child: TextFormField(
+                            controller: _username,
+                            validator: (value) {
+                              if (!isPseudoValid(value!)) {
+                                return "Veuillez entrer un pseudo valide.";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20, left: 20),
+                          child: SizedBox(
+                            width: size.width,
+                            child: Text(
+                              "Adresse mail",
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 20, left: 20),
+                          child: TextFormField(
+                            controller: _mail,
+                            validator: (value) {
+                              if (!isEmailValid(value!)) {
+                                return "Veuillez entrer une adresse mail valide.";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20, left: 20),
+                          child: SizedBox(
+                            width: size.width,
+                            child: Text(
+                              "Mot de passe",
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 20, left: 20),
+                          child: TextFormField(
+                            controller: _password,
+                            obscureText: _obscureText,
+                            validator: (value) {
+                              if (!isPasswordValid(value!)) {
+                                return "Minimum 6 caractères.";
+                              }
+                              return null;
+                            },
+                            cursorColor: Colors.redAccent,
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                icon: const Icon(
+                                  Icons.visibility,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20, left: 20),
+                          child: SizedBox(
+                            width: size.width,
+                            child: Text(
+                              "Confirmation du mot de passe",
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 20, left: 20),
+                          child: TextFormField(
+                            obscureText: _obscureText,
+                            validator: (value) {
+                              if (value != _password.text) {
+                                return "Veuillez entrer un mot de passe similaire.";
+                              }
+                              return null;
+                            },
+                            cursorColor: Colors.redAccent,
+                          ),
+                        ),
+                        SizedBox(
+                          width: size.width,
+                          child: Row(
+                            children: [
+                              Spacer(),
+                              Padding(
+                                padding: EdgeInsets.all(20),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      signIn(
+                                          _username.text,
+                                          cryptPassword(_password.text),
+                                          _mail.text,
+                                          context);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  "Inscription en cours...")));
+                                    }
+                                  },
+                                  child: Text("S'INSCRIRE"),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
               ),
-              border: InputBorder.none,
-            ),
+              AlreadyHaveAnAccountCheck(login: false),
+            ],
           ),
-          Text("Confirmation Mot de passe"),
-          TextFormField(
-            obscureText: _obscureText,
-            validator: (value) {
-              if (value != _password.text) {
-                return "Veuillez entrer un mot de passe similaire.";
-              }
-              return null;
-            },
-            cursorColor: Colors.redAccent,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                signIn(_username.text, cryptPassword(_password.text),
-                    _mail.text, context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Inscription en cours...")));
-              }
-            },
-            child: Text("S'inscrire"),
-          ),
-          SizedBox(height: size.height * 0.03),
-          AlreadyHaveAnAccountCheck(login: false),
-        ],
+        ),
       ),
     );
   }
@@ -277,21 +411,30 @@ class AlreadyHaveAnAccountCheck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            changePage(context);
-          },
-          child: Text(
-            login ? "S'inscrire" : "Se connecter",
-            style: TextStyle(
-              color: Colors.redAccent,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        )
+    return Column(
+      children: [
+        Divider(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(primary: Colors.grey.shade200),
+                onPressed: () {
+                  changePage(context);
+                },
+                child: Text(
+                  login ? "Créer un compte".toUpperCase() : "Je suis déjà inscrit".toUpperCase(),
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ],
     );
   }

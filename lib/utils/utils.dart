@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:crypt/crypt.dart';
+import 'package:crypto/crypto.dart';
 
 bool isPseudoValid(String? pseudo) {
   if (pseudo == null || pseudo.isEmpty) return false;
@@ -17,7 +20,9 @@ bool isEmailValid(String? email) {
 }
 
 String cryptPassword(String password) {
-  return Crypt.sha256(password, salt: "anecdate").toString();
+  var bytes = utf8.encode(password); // data being hashed
+  var digest = sha256.convert(bytes);
+  return digest.toString();
 }
 
 bool isAdressWebValid(String? web) {

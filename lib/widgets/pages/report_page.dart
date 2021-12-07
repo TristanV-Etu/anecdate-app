@@ -59,7 +59,9 @@ class ReportPageState extends State<ReportPage> {
     return GestureDetector(
       onTap: _unfocus,
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text("Signalement"),
+        ),
         body: Form(
           key: _formKey,
           child: _createReportPage(),
@@ -72,7 +74,14 @@ class ReportPageState extends State<ReportPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Text("Vous souhaitez signaler cette Anec'Date ?"),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Text(
+              "Vous souhaitez signaler cette Anec'Date ?",
+              style: Theme.of(context).textTheme.headline4,
+              textAlign: TextAlign.center,
+            ),
+          ),
           _createCausePart(),
           _createCommentPart(),
           _createValidateButton(),
@@ -85,20 +94,34 @@ class ReportPageState extends State<ReportPage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 10, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Pour quelle raison ?"),
-                    Divider(),
-                    Column(
-                      children: _createAllRadioButton(),
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.warning_outlined,
                     ),
-                  ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Pour quelles raisons ?"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: Column(
+                  children: _createAllRadioButton(),
                 ),
               ),
             ],
@@ -118,6 +141,7 @@ class ReportPageState extends State<ReportPage> {
 
   Widget _createRadio(String cause) {
     return ListTile(
+      visualDensity: VisualDensity(horizontal: 0, vertical: -4),
       title: Text(cause),
       leading: Radio<String>(
         value: cause,
@@ -136,26 +160,41 @@ class ReportPageState extends State<ReportPage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Quelque chose à ajouter ?"),
-                    Divider(),
-                    TextFormField(
-                        controller: _comments,
-                        validator: (value) {
-                          if (value != null && value.length > 200) {
-                            return "Veuillez mettre un commentaire de moins de 200 caractères.";
-                          }
-                          return null;
-                        }),
-                  ],
-                ),
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.help_outlined,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Quelque chose à ajouter ?"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: TextFormField(
+                    maxLength: 200,
+                    controller: _comments,
+                    validator: (value) {
+                      if (value != null && value.length > 200) {
+                        return "Veuillez mettre un commentaire de moins de 200 caractères.";
+                      }
+                      return null;
+                    }),
               ),
             ],
           ),
@@ -165,15 +204,18 @@ class ReportPageState extends State<ReportPage> {
   }
 
   Widget _createValidateButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Votre report en cours d'envoi...")));
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: ElevatedButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Votre report en cours d'envoi...")));
             postReport(_comments.text, idAnecdate, _cause, _ctx);
-        }
-      },
-      child: Text("Envoyer"),
+          }
+        },
+        child: Text("ENVOYER"),
+      ),
     );
   }
 }

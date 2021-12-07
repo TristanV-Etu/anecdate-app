@@ -1,9 +1,11 @@
 import 'package:anecdate_app/model/anecdate.dart';
 import 'package:anecdate_app/utils/api.dart';
+import 'package:anecdate_app/utils/globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../nav_menu.dart';
 import 'details_page.dart';
 
 class ListAnecdateFromUserPage extends StatelessWidget {
@@ -15,21 +17,24 @@ class ListAnecdateFromUserPage extends StatelessWidget {
     _ctx = context;
     _size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Anec'dates"),
+      ),
       body: SingleChildScrollView(
         child: FutureBuilder<List<Anecdate>>(
             future: _getAnecdatesfromUser(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return createWaitProgress();
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return _createNoAnecdatePage();
+                return _createNoAnecdatePage(
+                    "Vous n'avez posté aucune Anec'Date.");
               } else if (snapshot.connectionState == ConnectionState.done) {
                 return _createCards(snapshot.data!);
               } else if (snapshot.hasError) {
                 return Text("Une erreur est survenue.");
               }
-              return const CircularProgressIndicator();
+              return createWaitProgress();
             }),
       ),
     );
@@ -57,7 +62,7 @@ class ListAnecdateFromUserPage extends StatelessWidget {
   Widget _createCard(Anecdate anecdate) {
     String formattedDate = DateFormat('dd/MM/yyyy').format(anecdate.date);
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20,20,20,0),
       child: InkWell(
         onTap: () {
           Navigator.push(_ctx,
@@ -68,40 +73,90 @@ class ListAnecdateFromUserPage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Image.network(
-                    anecdate.image!,
-                    height: _size.height * 0.1,
-                    width: _size.width * 0.1,
-                    fit: BoxFit.cover,
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(10, 10, 4, 20),
+                    child: Image.network(
+                      anecdate.image!,
+                      errorBuilder: (context, exception, stackTrace) {
+                        return Image.asset(
+                          "assets/img/image-not-found.png",
+                          height: 60,
+                          width: 60,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                      height: 60,
+                      width: 60,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  Column(
-                    children: [Text(anecdate.title), Text(formattedDate)],
-                  )
+                  SizedBox(
+                    height: 60,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: _size.width * 0.6,
+                          child: Text(
+                            anecdate.title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: (Globals.sizeFontSystem <= 1) ? 2 : 1,
+                            textAlign: TextAlign.left,
+                            style: Theme.of(_ctx).textTheme.headline4,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: _size.width * 0.4,
+                            ),
+                            Text(
+                              formattedDate,
+                              style:
+                                  TextStyle(color: Theme.of(_ctx).primaryColor),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              Row(
-                children: [
-                  Text("lik: ${anecdate.likes}"),
-                  Text("dis: ${anecdate.dislikes}"),
-                  FutureBuilder<int>(
-                      future: _getNumberComments(anecdate.id),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (!snapshot.hasData || snapshot.data == 0) {
-                          return Text("Aucun commentaire");
-                        } else if (snapshot.connectionState ==
-                            ConnectionState.done) {
-                          int nb = snapshot.data!;
-                          return Text(
-                              "$nb commentaire" + (nb > 1 ? "s" : "") + ".");
-                        } else if (snapshot.hasError) {
-                          return Text("Une erreur est survenue.");
-                        }
-                        return const CircularProgressIndicator();
-                      }),
-                ],
+              SizedBox(
+                width: _size.width,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  child: Row(
+                    children: [
+                      Icon(Icons.thumb_up_alt_sharp),
+                      Text(" ${anecdate.likes}"),
+                      SizedBox(width: 20),
+                      Icon(Icons.thumb_down_alt_sharp),
+                      Text(" ${anecdate.dislikes}"),
+                      SizedBox(width: 20),
+                      FutureBuilder<int>(
+                          future: _getNumberComments(anecdate.id),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return createWaitProgress();
+                            } else if (!snapshot.hasData ||
+                                snapshot.data == 0) {
+                              return Text("Aucun commentaire.");
+                            } else if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              int nb = snapshot.data!;
+                              return Text("$nb commentaire" +
+                                  (nb > 1 ? "s" : "") +
+                                  ".");
+                            } else if (snapshot.hasError) {
+                              return Text("Une erreur est survenue.");
+                            }
+                            return createWaitProgress();
+                          }),
+                    ],
+                  ),
+                ),
               ),
               Divider(),
             ],
@@ -115,7 +170,21 @@ class ListAnecdateFromUserPage extends StatelessWidget {
     return await getNumberCommentsFromAnecdate(idAnecdate);
   }
 
-  Widget _createNoAnecdatePage() {
-    return Text("Vous n'avez aucune anecdate postée.");
+  Widget _createNoAnecdatePage(String msg) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              msg,
+              style: Theme.of(_ctx).textTheme.headline4,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

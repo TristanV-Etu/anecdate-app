@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:anecdate_app/utils/globals.dart';
@@ -17,6 +18,7 @@ import 'package:anecdate_app/widgets/pages/tuto_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../main.dart';
 import 'pages/add_anecdate_page.dart';
 
 class NavDrawer extends StatefulWidget {
@@ -38,19 +40,43 @@ class NavDrawerState extends State<NavDrawer> {
   ];
 
   final List<Icon> _icons = [
-    const Icon(Icons.menu),
-    const Icon(Icons.menu),
-    const Icon(Icons.menu),
-    const Icon(Icons.menu),
-    const Icon(Icons.menu),
-    const Icon(Icons.menu),
-    const Icon(Icons.menu),
-    const Icon(Icons.menu),
-    const Icon(Icons.menu)
+    const Icon(
+      Icons.manage_accounts_outlined,
+    ),
+    const Icon(
+      Icons.chat_outlined,
+    ),
+    const Icon(
+      Icons.star_outlined,
+    ),
+    const Icon(
+      Icons.power_settings_new_outlined,
+    ),
+    const Icon(
+      Icons.grid_view_outlined,
+    ),
+    const Icon(
+      Icons.add_circle_outline_outlined,
+    ),
+    const Icon(
+      Icons.settings_outlined,
+    ),
+    const Icon(
+      Icons.help_outlined,
+    ),
+    const Icon(
+      Icons.lightbulb_outlined,
+    ),
   ];
 
   late BuildContext _ctx;
+  late Size _size;
   late List<Function> _functions;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -71,8 +97,13 @@ class NavDrawerState extends State<NavDrawer> {
       _goToAboutPage
     ];
     _ctx = context;
-    return Drawer(
-      child: ListView(children: _createList()),
+    _size = MediaQuery.of(context).size;
+    return Container(
+      width: _size.width * ((Globals.sizeFontSystem <= 1) ? 0.65 : 0.7),
+      height: _size.height,
+      child: Drawer(
+        child: ListView(children: _createList()),
+      ),
     );
   }
 
@@ -84,7 +115,12 @@ class NavDrawerState extends State<NavDrawer> {
       _addConnectPart(list);
       i = 4;
     } else {
-      list.add(_createTile(Globals.userName, _icons[0], () {}));
+      list.add(_createTile(
+          Globals.userName,
+          Icon(
+            Icons.person_outlined,
+          ),
+          () {}));
       list.add(const Divider());
     }
 
@@ -95,6 +131,7 @@ class NavDrawerState extends State<NavDrawer> {
       list.add(_createTile(_strings[i], _icons[i], _functions[i]));
     }
 
+    list.add(Opacity(opacity: 0, child: ListTile()));
     list.add(_createQuizButton());
 
     return list;
@@ -111,13 +148,18 @@ class NavDrawerState extends State<NavDrawer> {
   }
 
   List<Widget> _addConnectPart(List<Widget> list) {
-    list.add(_createTile(_strings[0], _icons[0], _functions[0]));
-    list.add(_createConnectButton("Connexion", () {
+    list.add(_createTile(
+        _strings[0],
+        Icon(
+          Icons.person_outlined,
+        ),
+        () {}));
+    list.add(_createConnectButton("CONNEXION", () {
       _pop();
       Navigator.push(
           _ctx, MaterialPageRoute(builder: (context) => LoginPage()));
     }));
-    list.add(_createConnectButton("Se connecter", () {
+    list.add(_createConnectButton("S'INSCRIRE", () {
       _pop();
       Navigator.push(
           _ctx, MaterialPageRoute(builder: (context) => SignUpPage()));
@@ -127,38 +169,34 @@ class NavDrawerState extends State<NavDrawer> {
 
   ListTile _createConnectButton(String text, Function f) {
     return ListTile(
-      title: Text(text),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.horizontal(right: Radius.circular(300)),
+      title: ElevatedButton(
+        onPressed: () { f.call(); },
+        child: Text(text),
       ),
-      tileColor: Colors.white,
-      focusColor: Colors.redAccent,
-      onTap: () {
-        f.call();
-      },
     );
   }
 
   ListTile _createQuizButton() {
     return ListTile(
-      title: Text("Mode quiz"),
-      subtitle: Switch(
-        value: Globals.quizzMode,
-        onChanged: (value) {
-          setState(() {
-            Globals.quizzMode = value;
-            Globals.pushPreferences();
-            _pop();
-            Navigator.pushReplacement(_ctx, MaterialPageRoute(builder: (builder) => MainPage()));
-          });
-        },
+      title: Row(
+        children: [
+          Text("Mode quiz"),
+          Switch(
+            value: Globals.quizzMode,
+            activeColor: Theme.of(context).primaryColor,
+            onChanged: (value) {
+              setState(() {
+                Globals.quizzMode = value;
+                Globals.pushPreferences();
+              });
+              streamController.add("reloadQuizz");
+            },
+          ),
+        ],
       ),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.horizontal(right: Radius.circular(300)),
+      leading: Icon(
+        Icons.quiz_outlined,
       ),
-      tileColor: Colors.white,
-      focusColor: Colors.redAccent,
-      onTap: () {},
     );
   }
 
@@ -167,11 +205,9 @@ class NavDrawerState extends State<NavDrawer> {
   }
 
   void _goToAccountPage() {
-    if (Globals.isConnect) {
-      _pop();
-      Navigator.push(
-          _ctx, MaterialPageRoute(builder: (context) => AccountInfoPage()));
-    }
+    _pop();
+    Navigator.push(
+        _ctx, MaterialPageRoute(builder: (context) => AccountInfoPage()));
   }
 
   void _goToCommentsPage() {
@@ -197,6 +233,10 @@ class NavDrawerState extends State<NavDrawer> {
       _pop();
       Navigator.push(
           _ctx, MaterialPageRoute(builder: (context) => AddAnecdatePage()));
+    } else {
+      _pop();
+      Navigator.push(
+          _ctx, MaterialPageRoute(builder: (context) => LoginPage()));
     }
   }
 
@@ -220,10 +260,24 @@ class NavDrawerState extends State<NavDrawer> {
     Navigator.pop(context);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text("Vous avez été déconnecté.")));
+    Globals.saveUserLikes[Globals.userName] = Globals.idAnecdateLike;
+    Globals.saveUserDislikes[Globals.userName] = Globals.idAnecdateDislike;
     Globals.userName = "";
     Globals.isConnect = false;
     Globals.idUser = -1;
     Globals.tokenAuth = "";
+    Globals.idAnecdateLike = [];
+    Globals.idAnecdateDislike = [];
     Globals.pushPreferences();
+
+    streamController.add("reloadQuizz");
   }
+}
+
+Widget createWaitProgress(){
+  return Center(
+    child: CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+    ),
+  );
 }

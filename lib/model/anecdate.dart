@@ -54,4 +54,11 @@ class Anecdate {
     dislikes += 1;
   }
 
+  void removeLike(){
+    likes -= 1;
+  }
+  void removeDislike(){
+    dislikes -= 1;
+  }
+
 }

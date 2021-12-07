@@ -2,6 +2,7 @@ import 'package:anecdate_app/model/anecdate.dart';
 import 'package:anecdate_app/model/comment.dart';
 import 'package:anecdate_app/utils/api.dart';
 import 'package:anecdate_app/utils/globals.dart';
+import 'package:anecdate_app/widgets/nav_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,21 +18,24 @@ class ListCommentsFromUserPage extends StatelessWidget {
     _ctx = context;
     _size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Commentaires"),
+      ),
       body: SingleChildScrollView(
         child: FutureBuilder<List<Comment>>(
             future: _getCommentsfromUser(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return createWaitProgress();
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return _createNoAnecdatePage();
+                return _createNoAnecdatePage(
+                    "Vous n'avez commenté aucune Anec'Date.");
               } else if (snapshot.connectionState == ConnectionState.done) {
                 return _createCards(snapshot.data!);
               } else if (snapshot.hasError) {
                 return Text("Une erreur est survenue.");
               }
-              return const CircularProgressIndicator();
+              return createWaitProgress();
             }),
       ),
     );
@@ -57,13 +61,13 @@ class ListCommentsFromUserPage extends StatelessWidget {
           future: _getAnecdateFromComment(element),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }else if (snapshot.connectionState == ConnectionState.done) {
+              return createWaitProgress();
+            } else if (snapshot.connectionState == ConnectionState.done) {
               return _createCard(snapshot.data!, element);
             } else if (snapshot.hasError) {
               return Text("Une erreur est survenue.");
             }
-            return const CircularProgressIndicator();
+            return createWaitProgress();
           }));
     }
     return Column(
@@ -74,7 +78,7 @@ class ListCommentsFromUserPage extends StatelessWidget {
   Widget _createCard(Anecdate anecdate, Comment comment) {
     String formattedDate = DateFormat('dd/MM/yyyy').format(anecdate.date);
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20,20,20,0),
       child: InkWell(
         onTap: () {
           Navigator.push(_ctx,
@@ -85,18 +89,60 @@ class ListCommentsFromUserPage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Image.network(
-                    anecdate.image!,
-                    height: _size.height * 0.1,
-                    width: _size.width * 0.1,
-                    fit: BoxFit.cover,
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(10, 10, 4, 20),
+                    child: Image.network(
+                      anecdate.image!,
+                      errorBuilder: (context, exception, stackTrace) {
+                        return Image.asset(
+                          "assets/img/image-not-found.png",
+                          height: 60,
+                          width: 60,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                      height: 60,
+                      width: 60,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  Column(
-                    children: [Text(anecdate.title), Text(formattedDate)],
-                  )
+                  SizedBox(
+                    height: 60,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: _size.width * 0.6,
+                          child: Text(
+                            anecdate.title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: (Globals.sizeFontSystem <= 1) ? 2 : 1,
+                            textAlign: TextAlign.left,
+                            style: Theme.of(_ctx).textTheme.headline4,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(width: _size.width*0.4,),
+                            Text(
+                              formattedDate,
+                              style:
+                                  TextStyle(color: Theme.of(_ctx).primaryColor),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              Text("${comment.message}"),
+              SizedBox(
+                width: _size.width,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  child: Text('" ${comment.message} "', textAlign: TextAlign.left, style: TextStyle(color: Globals.darkTheme ? Colors.grey.shade200 : Colors.grey.shade600),),
+                ),
+              ),
               Divider(),
             ],
           ),
@@ -109,7 +155,21 @@ class ListCommentsFromUserPage extends StatelessWidget {
     return await getNumberCommentsFromAnecdate(idAnecdate);
   }
 
-  Widget _createNoAnecdatePage() {
-    return Text("Vous n'avez commenté aucune anec'date.");
+  Widget _createNoAnecdatePage(String msg) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              msg,
+              style: Theme.of(_ctx).textTheme.headline4,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

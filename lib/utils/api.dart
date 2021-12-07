@@ -9,14 +9,31 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import '../main.dart';
+
 Future<Uri> getUri(
     {required String path, Map<String, dynamic>? queryParam}) async {
   return Uri.http(Globals.getApiAdresse(), path, queryParam);
 }
 
 Future<List<dynamic>> getAnecdatesOfTheDay() async {
-  var response = await http.get(await getUri(path: "/api/anecdate"));
-  return jsonDecode(response.body);
+  String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  var response = await http.get(await getUri(path: "/api/anecdate/date/" + date));
+  List<dynamic> categories = [];
+  List<dynamic> result = [];
+
+  Globals.choiceCategories.forEach((key, value) {
+    if (value){
+      categories.add(Globals.idsCategories[key]);
+    }
+  });
+
+  for (var element in jsonDecode(response.body)) {
+    if (categories.contains(element["idCategory"])) {
+      result.add(element);
+    }
+  }
+  return result;
 }
 
 Future<Map<Anecdate, dynamic>> getQuizzOfTheDay() async {
@@ -70,6 +87,7 @@ Future<Map<String, dynamic>> getSpecificUserById(int idUser) async {
 
 Future<List<dynamic>> getAllCategories() async {
   var response = await http.get(await getUri(path: "/api/category"));
+  print("hello");
   return jsonDecode(response.body);
 }
 
@@ -83,6 +101,10 @@ Future<void> login(String username, String password, BuildContext ctx) async {
       Globals.userName = username;
       Globals.idUser = result["id"];
       Globals.tokenAuth = result["token"];
+
+      Globals.idAnecdateLike = Globals.saveUserLikes[username] ?? [];
+      Globals.idAnecdateDislike = Globals.saveUserDislikes[username] ?? [];
+
       Globals.pushPreferences();
     }
 
@@ -103,6 +125,7 @@ Future<void> login(String username, String password, BuildContext ctx) async {
     ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(content: Text("Connexion réussie. Bonjour $username.")));
 
+    streamController.add("reloadQuizz");
     Navigator.pop(ctx);
   } on SocketException catch (_) {
     ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
@@ -122,9 +145,6 @@ Future<void> signIn(
       "mail": mail,
       "mode_quiz": "0"
     });
-
-    print(response.body);
-    print(response.statusCode);
 
     ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
     if (response.body.contains("pseudo") && response.statusCode != 200) {
@@ -246,7 +266,6 @@ Future<void> postNewAnecDate(
 
     var res = await request.send();
     var result = String.fromCharCodes(await res.stream.toBytes());
-    print(result);
 
     ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
     if (res.statusCode != 200) {
@@ -336,6 +355,21 @@ Future<void> likeAnecdate(Anecdate anecdate, BuildContext ctx, {bool like = true
   try {
     var response = await http.put(
         await getUri(path: "/api/anecdate/" + anecdate.id.toString() + "/" + (like ? "" : "dis") + "like"),
+        headers: {
+          "Authorization": Globals.tokenAuth
+        });
+
+  } on SocketException catch (_) {
+    ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
+    ScaffoldMessenger.of(ctx)
+        .showSnackBar(SnackBar(content: Text("Aucune connexion détecté.")));
+  }
+}
+
+Future<void> unlikeAnecdate(Anecdate anecdate, BuildContext ctx, {bool like = true}) async{
+  try {
+    var response = await http.put(
+        await getUri(path: "/api/anecdate/" + anecdate.id.toString() + "/un" + (like ? "" : "dis") + "like"),
         headers: {
           "Authorization": Globals.tokenAuth
         });

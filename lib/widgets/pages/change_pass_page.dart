@@ -57,7 +57,9 @@ class ChangePassPageState extends State<ChangePassPage> {
     return GestureDetector(
       onTap: _unfocus,
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text('Mot de passe'),
+        ),
         body: SingleChildScrollView(
           child: _createCard(),
         ),
@@ -71,98 +73,153 @@ class ChangePassPageState extends State<ChangePassPage> {
       child: SizedBox(
         width: _size.width,
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.only(top: 20, left: 20, right: 20),
           child: Card(
-            child: Row(
+            child: Column(
               children: [
-                const Icon(Icons.menu),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text("Changement de mot de passe"),
-                      Divider(),
-                      Text("Ancien mot de passe"),
-                      TextFormField(
-                        obscureText: _obscureOld,
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: const Icon(
-                              Icons.visibility,
-                              color: Colors.redAccent,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureOld = !_obscureOld;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(),
-                        ),
-                        controller: _oldPassword,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "N'oubliez pas d'entrer votre précédent mot de passe.";
-                          }
-                          String oldPassCrypt = cryptPassword(value);
-                          if (oldPassCrypt != passwordCrypt) {
-                            return "Ce mot de passe ne correspond pas à votre ancien mot de passe.";
-                          }
-                          return null;
-                        },
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 10, left: 8),
+                      child: Icon(
+                        Icons.lock_outlined,
                       ),
-                      Text("Nouveau mot de passe"),
-                      TextFormField(
-                        obscureText: _obscureNew,
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: const Icon(
-                              Icons.visibility,
-                              color: Colors.redAccent,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureNew = !_obscureNew;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(),
-                        ),
-                        controller: _newPassword,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "N'oubliez pas de mettre un nouveau mot de passe.";
-                          } else if (!isPasswordValid(value)) {
-                            return "Veuillez mettre un mot de passe valide de plus de 6 caractères.";
-                          }
-                          return null;
-                        },
-                      ),
-                      Text("Confirmation mot de passe"),
-                      TextFormField(
-                        obscureText: _obscureNew,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value != _newPassword.text) {
-                            return "Veuillez entrer un mot de passe similaire..";
-                          }
-                          return null;
-                        },
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text("Changement en cours...")));
-                            changePassword(
-                                cryptPassword(_newPassword.text), _ctx);
-                          }
-                        },
-                        child: Text("Changer"),
-                      ),
-                    ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 10, left: 8),
+                      child: Text("Changement de mot de passe"),
+                    ),
+                  ],
+                ),
+                Divider(
+                  color: Colors.grey.shade400,
+                  thickness: 1.5,
+                  indent: 40,
+                  endIndent: 0,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 40),
+                  child: SizedBox(
+                    width: _size.width,
+                    child: Text(
+                      "Ancien mot de passe",
+                      textAlign: TextAlign.left,
+                    ),
                   ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 40, right: 16, bottom: 16),
+                  child: TextFormField(
+                    obscureText: _obscureOld,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureOld = !_obscureOld;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    controller: _oldPassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "N'oubliez pas d'entrer votre précédent mot de passe.";
+                      }
+                      String oldPassCrypt = cryptPassword(value);
+                      if (oldPassCrypt != passwordCrypt) {
+                        return "Ce mot de passe ne correspond pas à votre ancien mot de passe.";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 40),
+                  child: SizedBox(
+                    width: _size.width,
+                    child: Text(
+                      "Nouveau mot de passe",
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 40, right: 16, bottom: 16),
+                  child: TextFormField(
+                    obscureText: _obscureNew,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureNew = !_obscureNew;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    controller: _newPassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "N'oubliez pas de mettre un nouveau mot de passe.";
+                      } else if (!isPasswordValid(value)) {
+                        return "Veuillez mettre un mot de passe valide de plus de 6 caractères.";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 40),
+                  child: SizedBox(
+                    width: _size.width,
+                    child: Text(
+                      "Confirmation mot de passe",
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 40, right: 16, bottom: 16),
+                  child: TextFormField(
+                    obscureText: _obscureNew,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value != _newPassword.text) {
+                        return "Veuillez entrer un mot de passe similaire..";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Row(
+                  children: [
+                    Spacer(),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 10, right: 16),
+                      child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Changement en cours...")));
+                          changePassword(
+                              cryptPassword(_newPassword.text), _ctx);
+                        }
+                      },
+                      child: Text("VALIDER"),
+                    ),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -41,10 +41,6 @@ class NotificationSystem {
   }
 
   static void subscribeNotification() {
-    print(Globals.nameApp);
-    print(Globals.appMessage);
-    print("${Globals.hourNotif}:${Globals.minuteNotif}");
-    print(Globals.getDaysNotifications());
     showScheduledNotification(
         title: Globals.nameApp,
         body: Globals.appMessage,
@@ -87,7 +83,6 @@ class NotificationSystem {
   }
 
   static void cancelAll() {
-    print("cancel");
     _notifcations.cancelAll();
   }
 }

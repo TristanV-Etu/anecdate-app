@@ -80,7 +80,9 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
     return GestureDetector(
       onTap: _unfocus,
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text("Ajouter Anec'Date"),
+        ),
         body: Form(
           key: _formKey,
           child: _createAddPage(),
@@ -108,31 +110,49 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Titre de votre Anec'Date"),
-                    Divider(),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: _titleCon,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Veuillez entrer un titre valide.";
-                        } else if (value.length > 30) {
-                          return "Veuillez mettre un titre de moins de 30 caractères.";
-                        }
-                        return null;
-                      },
-                    )
-                  ],
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.text_format_outlined,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Titre de votre Anec'Date"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: TextFormField(
+                  maxLength: 50,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: _titleCon,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Veuillez entrer un titre valide.";
+                    } else if (value.length > 30) {
+                      return "Veuillez mettre un titre de moins de 50 caractères.";
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {});
+                  },
                 ),
               ),
             ],
@@ -143,38 +163,55 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   }
 
   Widget _createDateField() {
-    return Padding(
-      padding: EdgeInsets.all(20),
-      child: Card(
-        child: Row(
-          children: [
-            const Icon(Icons.menu),
-            Expanded(
-              child: Column(
+    return SizedBox(
+      width: _size.width,
+      child: Padding(
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+        child: Card(
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Text("Date de votre Anec'Date"),
-                  Divider(),
-                  GestureDetector(
-                    onTap: () => _selectDate(context),
-                    child: AbsorbPointer(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                        controller: _dateCon,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Veuillez entrer une date valide.";
-                          }
-                          return null;
-                        },
-                      ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.calendar_today_outlined,
                     ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Date de votre Anec'Date"),
                   ),
                 ],
               ),
-            ),
-          ],
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      controller: _dateCon,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Veuillez entrer une date valide.";
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -199,42 +236,58 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   }
 
   Widget _createImageField() {
-    return Padding(
-      padding: EdgeInsets.all(20),
-      child: Card(
-        child: Row(
-          children: [
-            const Icon(Icons.menu),
-            Expanded(
-              child: Column(
+    return SizedBox(
+      width: _size.width,
+      child: Padding(
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+        child: Card(
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Text("Image de votre Anec'Date"),
-                  Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3.5,
-                        child: (_imageFile == null)
-                            ? Text("Aucune photo sélectionnée.")
-                            : Image.file(
-                                _imageFile!,
-                                fit: BoxFit.cover,
-                                height: _size.height * 0.1,
-                                width: _size.width * 0.1,
-                              ),
-                      ),
-                      IconButton(
-                        onPressed: (() =>
-                            _getImage(source: ImageSource.gallery)),
-                        icon: Icon(Icons.photo_album_outlined),
-                      ),
-                    ],
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.image_outlined,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Image de votre Anec'Date"),
                   ),
                 ],
               ),
-            ),
-          ],
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width / 3.5,
+                      child: (_imageFile == null)
+                          ? Text("Aucune photo sélectionnée.")
+                          : Image.file(
+                              _imageFile!,
+                              fit: BoxFit.cover,
+                              height: _size.height * 0.1,
+                              width: _size.width * 0.1,
+                            ),
+                    ),
+                    ElevatedButton(
+                      onPressed: (() => _getImage(source: ImageSource.gallery)),
+                      child: Text("CHOISIR"),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -255,32 +308,47 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Description de votre Anec'Date"),
-                    Divider(),
-                    TextFormField(
-                      maxLines: 5,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: _descCon,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Veuillez entrer une description valide.";
-                        } else if (value.length > 1000) {
-                          return "Veuillez mettre une description de moins de 1000 caractères.";
-                        }
-                        return null;
-                      },
-                    )
-                  ],
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.article_outlined,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Description de votre Anec'Date"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: TextFormField(
+                  maxLines: 5,
+                  maxLength: 1000,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: _descCon,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Veuillez entrer une description valide.";
+                    } else if (value.length > 1000) {
+                      return "Veuillez mettre une description de moins de 1000 caractères.";
+                    }
+                    return null;
+                  },
                 ),
               ),
             ],
@@ -301,32 +369,46 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Catégorie de votre Anec'Date"),
-                    Divider(),
-                    DropdownButton<String>(
-                      value: _categoryValue,
-                      icon: const Icon(Icons.arrow_downward),
-                      underline: Container(
-                        height: 2,
-                      ),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          print(_categoryValue);
-                          _categoryValue = newValue!;
-                          print(_categoryValue);
-                        });
-                      },
-                      items: items,
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.apps_outlined,
                     ),
-                  ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Catégories de votre Anec'Date"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: DropdownButton<String>(
+                  value: _categoryValue,
+                  icon: const Icon(
+                    Icons.expand_more_outlined,
+                  ),
+                  underline: Container(
+                    height: 2,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _categoryValue = newValue!;
+                    });
+                  },
+                  items: items,
                 ),
               ),
             ],
@@ -340,32 +422,47 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Sources de votre Anec'Date"),
-                    Divider(),
-                    TextFormField(
-                      maxLines: 5,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: _sourcesCon,
-                      validator: (value) {
-                        if (!isAdressWebValid(value)) {
-                          return "Veuillez entrer des sources valides.";
-                        } else if (value!.length > 1000) {
-                          return "Veuillez mettre des sources de moins de 1000 caractères.";
-                        }
-                        return null;
-                      },
-                    )
-                  ],
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.import_contacts_outlined,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Sources de votre Anec'Date"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: TextFormField(
+                  maxLines: 5,
+                  maxLength: 1000,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: _sourcesCon,
+                  validator: (value) {
+                    if (!isAdressWebValid(value)) {
+                      return "Veuillez entrer des sources valides.";
+                    } else if (value!.length > 1000) {
+                      return "Veuillez mettre des sources de moins de 1000 caractères.";
+                    }
+                    return null;
+                  },
                 ),
               ),
             ],
@@ -387,17 +484,29 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
                   _facultatifDisplay = !_facultatifDisplay;
                 });
               },
-              icon: const Icon(Icons.arrow_downward),
+              icon: Icon(
+                Icons.expand_more_outlined,
+              ),
             ),
-            Text("(Optionnel) Mode Quizz"),
+            Text(
+              "(Optionnel) Mode Quizz",
+              style: Theme.of(context).textTheme.headline4,
+            ),
           ],
         ),
         Visibility(
           visible: _facultatifDisplay,
           child: Column(
             children: [
-              Text(
-                  "Si vous souhaitez que l'anec'date apparaisse en mode Quizz, remplissez les champs suivants :"),
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 10,
+                ),
+                child: Text(
+                    "Si vous souhaitez que l'anec'date apparaisse en mode Quizz, remplissez les champs suivants :"),
+              ),
               _createQuestionField(),
               _createGoodAnswerField(),
               _createBadAnswerField(),
@@ -412,41 +521,56 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Question de votre Anec'Date"),
-                    Divider(),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: _questionCon,
-                      validator: (value) {
-                        if ((value == null || value.isEmpty) &&
-                            ((_goodAnswerCon.text != null &&
-                                    _goodAnswerCon.text.isNotEmpty) ||
-                                (_badAnswer2Con.text != null &&
-                                    _badAnswer2Con.text.isNotEmpty) ||
-                                (_badAnswer1Con.text != null &&
-                                    _badAnswer1Con.text.isNotEmpty) ||
-                                (_badAnswer3Con.text != null &&
-                                    _badAnswer3Con.text.isNotEmpty))) {
-                          return "N'oubliez pas de mettre une question.";
-                        } else if (!isQuestionValid(value)) {
-                          return "N'oubliez pas le point d'interrogation.";
-                        } else if (value!.length > 30) {
-                          return "Veuillez mettre un question de moins de 30 caractères.";
-                        }
-                        return null;
-                      },
-                    )
-                  ],
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.contact_support_outlined,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Question de votre Anec'Date"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: TextFormField(
+                  maxLength: 50,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: _questionCon,
+                  validator: (value) {
+                    if ((value == null || value.isEmpty) &&
+                        ((_goodAnswerCon.text != null &&
+                                _goodAnswerCon.text.isNotEmpty) ||
+                            (_badAnswer2Con.text != null &&
+                                _badAnswer2Con.text.isNotEmpty) ||
+                            (_badAnswer1Con.text != null &&
+                                _badAnswer1Con.text.isNotEmpty) ||
+                            (_badAnswer3Con.text != null &&
+                                _badAnswer3Con.text.isNotEmpty))) {
+                      return "N'oubliez pas de mettre une question.";
+                    } else if (!isQuestionValid(value)) {
+                      return "N'oubliez pas le point d'interrogation.";
+                    } else if (value!.length > 30) {
+                      return "Veuillez mettre un question de moins de 50 caractères.";
+                    }
+                    return null;
+                  },
                 ),
               ),
             ],
@@ -460,39 +584,54 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Bonne réponse"),
-                    Divider(),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: _goodAnswerCon,
-                      validator: (value) {
-                        if ((value == null || value.isEmpty) &&
-                            ((_questionCon.text.isNotEmpty &&
-                                    _questionCon != null) ||
-                                (_badAnswer2Con.text != null &&
-                                    _badAnswer2Con.text.isNotEmpty) ||
-                                (_badAnswer1Con.text != null &&
-                                    _badAnswer1Con.text.isNotEmpty) ||
-                                (_badAnswer3Con.text != null &&
-                                    _badAnswer3Con.text.isNotEmpty))) {
-                          return "N'oubliez de mettre une bonne réponse.";
-                        } else if (value!.length > 20) {
-                          return "Veuillez mettre une réponse de moins de 20 caractères.";
-                        }
-                        return null;
-                      },
-                    )
-                  ],
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.done_outlined,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Réponses correctes"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: TextFormField(
+                  maxLength: 30,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: _goodAnswerCon,
+                  validator: (value) {
+                    if ((value == null || value.isEmpty) &&
+                        ((_questionCon.text.isNotEmpty &&
+                                _questionCon != null) ||
+                            (_badAnswer2Con.text != null &&
+                                _badAnswer2Con.text.isNotEmpty) ||
+                            (_badAnswer1Con.text != null &&
+                                _badAnswer1Con.text.isNotEmpty) ||
+                            (_badAnswer3Con.text != null &&
+                                _badAnswer3Con.text.isNotEmpty))) {
+                      return "N'oubliez de mettre une bonne réponse.";
+                    } else if (value!.length > 20) {
+                      return "Veuillez mettre une réponse de moins de 30 caractères.";
+                    }
+                    return null;
+                  },
                 ),
               ),
             ],
@@ -506,83 +645,106 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
     return SizedBox(
       width: _size.width,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Card(
-          child: Row(
+          child: Column(
             children: [
-              const Icon(Icons.menu),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text("Mauvaises réponses"),
-                    Divider(),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: _badAnswer1Con,
-                      validator: (value) {
-                        if ((value == null || value.isEmpty) &&
-                            ((_questionCon.text.isNotEmpty &&
-                                    _questionCon != null) ||
-                                (_goodAnswerCon.text != null &&
-                                    _goodAnswerCon.text.isNotEmpty) ||
-                                (_badAnswer2Con.text != null &&
-                                    _badAnswer2Con.text.isNotEmpty) ||
-                                (_badAnswer3Con.text != null &&
-                                    _badAnswer3Con.text.isNotEmpty))) {
-                          return "N'oubliez pas de mettre une mauvaise réponse.";
-                        } else if (value!.length > 20) {
-                          return "Veuillez mettre une réponse de moins de 20 caractères.";
-                        }
-                        return null;
-                      },
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Icon(
+                      Icons.close_outlined,
                     ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: _badAnswer2Con,
-                      validator: (value) {
-                        if ((value == null || value.isEmpty) &&
-                            ((_questionCon.text.isNotEmpty &&
-                                    _questionCon != null) ||
-                                (_goodAnswerCon.text != null &&
-                                    _goodAnswerCon.text.isNotEmpty) ||
-                                (_badAnswer1Con.text != null &&
-                                    _badAnswer1Con.text.isNotEmpty) ||
-                                (_badAnswer3Con.text != null &&
-                                    _badAnswer3Con.text.isNotEmpty))) {
-                          return "N'oubliez pas de mettre une mauvaise réponse.";
-                        } else if (value!.length > 20) {
-                          return "Veuillez mettre une réponse de moins de 20 caractères.";
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: _badAnswer3Con,
-                      validator: (value) {
-                        if ((value == null || value.isEmpty) &&
-                            ((_questionCon.text.isNotEmpty &&
-                                    _questionCon != null) ||
-                                (_goodAnswerCon.text != null &&
-                                    _goodAnswerCon.text.isNotEmpty) ||
-                                (_badAnswer2Con.text != null &&
-                                    _badAnswer2Con.text.isNotEmpty) ||
-                                (_badAnswer1Con.text != null &&
-                                    _badAnswer1Con.text.isNotEmpty))) {
-                          return "N'oubliez pas de mettre une mauvaise réponse.";
-                        } else if (value!.length > 20) {
-                          return "Veuillez mettre une réponse de moins de 20 caractères.";
-                        }
-                        return null;
-                      },
-                    ),
-                  ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10, left: 8),
+                    child: Text("Réponses fausses"),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1.5,
+                indent: 40,
+                endIndent: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 6),
+                child: TextFormField(
+                  maxLength: 30,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: _badAnswer1Con,
+                  validator: (value) {
+                    if ((value == null || value.isEmpty) &&
+                        ((_questionCon.text.isNotEmpty &&
+                                _questionCon != null) ||
+                            (_goodAnswerCon.text != null &&
+                                _goodAnswerCon.text.isNotEmpty) ||
+                            (_badAnswer2Con.text != null &&
+                                _badAnswer2Con.text.isNotEmpty) ||
+                            (_badAnswer3Con.text != null &&
+                                _badAnswer3Con.text.isNotEmpty))) {
+                      return "N'oubliez pas de mettre une mauvaise réponse.";
+                    } else if (value!.length > 20) {
+                      return "Veuillez mettre une réponse de moins de 30 caractères.";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 6),
+                child: TextFormField(
+                  maxLength: 30,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: _badAnswer2Con,
+                  validator: (value) {
+                    if ((value == null || value.isEmpty) &&
+                        ((_questionCon.text.isNotEmpty &&
+                                _questionCon != null) ||
+                            (_goodAnswerCon.text != null &&
+                                _goodAnswerCon.text.isNotEmpty) ||
+                            (_badAnswer1Con.text != null &&
+                                _badAnswer1Con.text.isNotEmpty) ||
+                            (_badAnswer3Con.text != null &&
+                                _badAnswer3Con.text.isNotEmpty))) {
+                      return "N'oubliez pas de mettre une mauvaise réponse.";
+                    } else if (value!.length > 20) {
+                      return "Veuillez mettre une réponse de moins de 30 caractères.";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40, right: 6, bottom: 16),
+                child: TextFormField(
+                  maxLength: 30,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: _badAnswer3Con,
+                  validator: (value) {
+                    if ((value == null || value.isEmpty) &&
+                        ((_questionCon.text.isNotEmpty &&
+                                _questionCon != null) ||
+                            (_goodAnswerCon.text != null &&
+                                _goodAnswerCon.text.isNotEmpty) ||
+                            (_badAnswer2Con.text != null &&
+                                _badAnswer2Con.text.isNotEmpty) ||
+                            (_badAnswer1Con.text != null &&
+                                _badAnswer1Con.text.isNotEmpty))) {
+                      return "N'oubliez pas de mettre une mauvaise réponse.";
+                    } else if (value!.length > 20) {
+                      return "Veuillez mettre une réponse de moins de 30 caractères.";
+                    }
+                    return null;
+                  },
                 ),
               ),
             ],
@@ -593,32 +755,35 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   }
 
   Widget _createValidateButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (_imageFile == null) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content:
-                  Text("N'oubliez pas de mettre une image d'illustration.")));
-        } else if (_formKey.currentState!.validate()) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("Votre aned'date est en cours d'envoi...")));
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: ElevatedButton(
+        onPressed: () {
+          if (_imageFile == null) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content:
+                    Text("N'oubliez pas de mettre une image d'illustration.")));
+          } else if (_formKey.currentState!.validate()) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("Votre aned'date est en cours d'envoi...")));
 
-          postNewAnecDate(
-              _titleCon.text,
-              _dateCon.text,
-              _imageFile!,
-              _categoryValue,
-              _descCon.text,
-              _sourcesCon.text,
-              _questionCon.text,
-              _goodAnswerCon.text,
-              _badAnswer1Con.text,
-              _badAnswer2Con.text,
-              _badAnswer3Con.text,
-              _ctx);
-        }
-      },
-      child: Text("Envoyer"),
+            postNewAnecDate(
+                _titleCon.text,
+                _dateCon.text,
+                _imageFile!,
+                _categoryValue,
+                _descCon.text,
+                _sourcesCon.text,
+                _questionCon.text,
+                _goodAnswerCon.text,
+                _badAnswer1Con.text,
+                _badAnswer2Con.text,
+                _badAnswer3Con.text,
+                _ctx);
+          }
+        },
+        child: Text("ENVOYER"),
+      ),
     );
   }
 }
