@@ -232,7 +232,7 @@ class NavDrawerState extends State<NavDrawer> {
     if (Globals.isConnect) {
       _pop();
       Navigator.push(
-          _ctx, MaterialPageRoute(builder: (context) => AddAnecdatePage()));
+          _ctx, MaterialPageRoute(builder: (context) => AddAnecdatePage(null)));
     } else {
       _pop();
       Navigator.push(

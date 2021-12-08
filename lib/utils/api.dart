@@ -11,6 +11,18 @@ import 'package:intl/intl.dart';
 
 import '../main.dart';
 
+List<dynamic> getListIdCategoriesChoices() {
+  List<dynamic> categories = [];
+
+  Globals.choiceCategories.forEach((key, value) {
+    if (value){
+      categories.add(Globals.idsCategories[key]);
+    }
+  });
+
+  return categories;
+}
+
 Future<Uri> getUri(
     {required String path, Map<String, dynamic>? queryParam}) async {
   return Uri.http(Globals.getApiAdresse(), path, queryParam);
@@ -19,17 +31,11 @@ Future<Uri> getUri(
 Future<List<dynamic>> getAnecdatesOfTheDay() async {
   String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
   var response = await http.get(await getUri(path: "/api/anecdate/date/" + date));
-  List<dynamic> categories = [];
+  List<dynamic> categories = getListIdCategoriesChoices();
   List<dynamic> result = [];
 
-  Globals.choiceCategories.forEach((key, value) {
-    if (value){
-      categories.add(Globals.idsCategories[key]);
-    }
-  });
-
   for (var element in jsonDecode(response.body)) {
-    if (categories.contains(element["idCategory"])) {
+    if (categories.contains(element["idCategory"]) && element["status"] == "active") {
       result.add(element);
     }
   }
@@ -39,7 +45,7 @@ Future<List<dynamic>> getAnecdatesOfTheDay() async {
 Future<Map<Anecdate, dynamic>> getQuizzOfTheDay() async {
   Map<Anecdate, dynamic> result = {};
   Anecdate temp;
-  var response;
+
   List list = await getAnecdatesOfTheDay();
   for (var element in list) {
     temp = Anecdate.fromJson(element);
@@ -58,25 +64,53 @@ Future<Map<String, dynamic>> getSpecificAnecdate(int idAnecdate) async {
 
 Future<List<dynamic>> getCommentsFromUser(int idAuthor) async {
   var response = await http.get(await getUri(path: "/api/user/" + idAuthor.toString() + "/comments"));
-  return jsonDecode(response.body);
+  List<dynamic> result = [];
+
+  for (var element in jsonDecode(response.body)) {
+    if (element["status"] == "active") {
+      result.add(element);
+    }
+  }
+  return result;
 }
 
 Future<List<dynamic>> getAnecdatesFromUser() async {
   var response = await http
       .get(await getUri(path: "/api/user/${Globals.idUser}/anecdates"));
-  return jsonDecode(response.body);
+  List<dynamic> result = [];
+
+  for (var element in jsonDecode(response.body)) {
+    if (element["status"] == "active" || element["status"] == "waiting") {
+      result.add(element);
+    }
+  }
+  return result;
 }
 
 Future<List<dynamic>> getCommentsFromAnecdate(int idAnecdate) async {
   var response = await http.get(await getUri(
       path: "/api/anecdate/" + idAnecdate.toString() + "/comments"));
-  return jsonDecode(response.body);
+  List<dynamic> result = [];
+
+  for (var element in jsonDecode(response.body)) {
+    if (element["status"] == "active") {
+      result.add(element);
+    }
+  }
+  return result;
 }
 
 Future<int> getNumberCommentsFromAnecdate(int idAnecdate) async {
   var response = await http.get(await getUri(
       path: "/api/anecdate/" + idAnecdate.toString() + "/comments"));
-  return (jsonDecode(response.body) as List<dynamic>).length;
+  List<dynamic> result = [];
+
+  for (var element in jsonDecode(response.body)) {
+    if (element["status"] == "active") {
+      result.add(element);
+    }
+  }
+  return result.length;
 }
 
 Future<Map<String, dynamic>> getSpecificUserById(int idUser) async {
@@ -87,7 +121,6 @@ Future<Map<String, dynamic>> getSpecificUserById(int idUser) async {
 
 Future<List<dynamic>> getAllCategories() async {
   var response = await http.get(await getUri(path: "/api/category"));
-  print("hello");
   return jsonDecode(response.body);
 }
 
@@ -265,7 +298,6 @@ Future<void> postNewAnecDate(
     request.headers["Authorization"] = Globals.tokenAuth;
 
     var res = await request.send();
-    var result = String.fromCharCodes(await res.stream.toBytes());
 
     ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
     if (res.statusCode != 200) {
@@ -274,7 +306,55 @@ Future<void> postNewAnecDate(
       return;
     }
     ScaffoldMessenger.of(ctx)
-        .showSnackBar(SnackBar(content: Text("Votre anec'date a été envoyé.")));
+        .showSnackBar(SnackBar(content: Text("Votre anec'date a été envoyé.\nElle est actuellement en modération pour la mettre en ligne.")));
+
+    Navigator.pop(ctx);
+  } on SocketException catch (_) {
+    ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
+    ScaffoldMessenger.of(ctx)
+        .showSnackBar(SnackBar(content: Text("Aucune connexion détecté.")));
+  }
+}
+
+
+Future<void> updateAnecDate(
+    int id,
+    String title,
+    String date,
+    String desc,
+    String sources,
+    String? question,
+    String? goodAnswer,
+    String? bad1Answer,
+    String? bad2Answer,
+    String? bad3Answer,
+    BuildContext ctx) async {
+  try {
+    var request =
+    http.MultipartRequest('POST', await getUri(path: "/api/anecdate/" + id.toString()));
+
+    request.fields["title"] = title;
+    request.fields["date"] = date;
+    request.fields["description"] = desc;
+    request.fields["sources"] = sources;
+    request.fields["question"] = question!;
+    request.fields["true_answer"] = goodAnswer!;
+    request.fields["wrong_answer1"] = bad1Answer!;
+    request.fields["wrong_answer2"] = bad2Answer!;
+    request.fields["wrong_answer3"] = bad3Answer!;
+
+    request.headers["Authorization"] = Globals.tokenAuth;
+
+    var res = await request.send();
+
+    ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
+    if (res.statusCode != 200) {
+      ScaffoldMessenger.of(ctx)
+          .showSnackBar(SnackBar(content: Text("Une erreur est survenu.")));
+      return;
+    }
+    ScaffoldMessenger.of(ctx)
+        .showSnackBar(SnackBar(content: Text("Votre anec'date a été modifié.")));
 
     Navigator.pop(ctx);
   } on SocketException catch (_) {

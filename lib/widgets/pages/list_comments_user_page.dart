@@ -63,7 +63,11 @@ class ListCommentsFromUserPage extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return createWaitProgress();
             } else if (snapshot.connectionState == ConnectionState.done) {
-              return _createCard(snapshot.data!, element);
+              if ((snapshot.data! as Anecdate).status == "active") {
+                return _createCard(snapshot.data!, element);
+              } else {
+                return SizedBox();
+              }
             } else if (snapshot.hasError) {
               return Text("Une erreur est survenue.");
             }

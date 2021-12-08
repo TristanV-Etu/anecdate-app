@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../nav_menu.dart';
+import 'add_anecdate_page.dart';
 import 'details_page.dart';
 
 class ListAnecdateFromUserPage extends StatelessWidget {
@@ -62,7 +63,7 @@ class ListAnecdateFromUserPage extends StatelessWidget {
   Widget _createCard(Anecdate anecdate) {
     String formattedDate = DateFormat('dd/MM/yyyy').format(anecdate.date);
     return Padding(
-      padding: EdgeInsets.fromLTRB(20,20,20,0),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: InkWell(
         onTap: () {
           Navigator.push(_ctx,
@@ -126,36 +127,7 @@ class ListAnecdateFromUserPage extends StatelessWidget {
                 width: _size.width,
                 child: Padding(
                   padding: EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
-                    children: [
-                      Icon(Icons.thumb_up_alt_sharp),
-                      Text(" ${anecdate.likes}"),
-                      SizedBox(width: 20),
-                      Icon(Icons.thumb_down_alt_sharp),
-                      Text(" ${anecdate.dislikes}"),
-                      SizedBox(width: 20),
-                      FutureBuilder<int>(
-                          future: _getNumberComments(anecdate.id),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return createWaitProgress();
-                            } else if (!snapshot.hasData ||
-                                snapshot.data == 0) {
-                              return Text("Aucun commentaire.");
-                            } else if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              int nb = snapshot.data!;
-                              return Text("$nb commentaire" +
-                                  (nb > 1 ? "s" : "") +
-                                  ".");
-                            } else if (snapshot.hasError) {
-                              return Text("Une erreur est survenue.");
-                            }
-                            return createWaitProgress();
-                          }),
-                    ],
-                  ),
+                  child: _createSubtitleCard(anecdate),
                 ),
               ),
               Divider(),
@@ -164,6 +136,51 @@ class ListAnecdateFromUserPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _createSubtitleCard(Anecdate anecdate) {
+    if (anecdate.status == "active") {
+      return Row(
+        children: [
+          Icon(Icons.thumb_up_alt_sharp),
+          Text(" ${anecdate.likes}"),
+          SizedBox(width: 20),
+          Icon(Icons.thumb_down_alt_sharp),
+          Text(" ${anecdate.dislikes}"),
+          SizedBox(width: 20),
+          FutureBuilder<int>(
+              future: _getNumberComments(anecdate.id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return createWaitProgress();
+                } else if (!snapshot.hasData || snapshot.data == 0) {
+                  return Text("Aucun commentaire.");
+                } else if (snapshot.connectionState == ConnectionState.done) {
+                  int nb = snapshot.data!;
+                  return Text("$nb commentaire" + (nb > 1 ? "s" : "") + ".");
+                } else if (snapshot.hasError) {
+                  return Text("Une erreur est survenue.");
+                }
+                return createWaitProgress();
+              }),
+        ],
+      );
+    } else {
+      return SizedBox(
+        width: _size.width,
+        child: Padding(
+          padding: EdgeInsets.only(right: 20),
+          child: Text(
+            'En cours de modération.',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+                color: Globals.darkTheme
+                    ? Colors.grey.shade200
+                    : Colors.grey.shade600),
+          ),
+        ),
+      );
+    }
   }
 
   Future<int> _getNumberComments(int idAnecdate) async {

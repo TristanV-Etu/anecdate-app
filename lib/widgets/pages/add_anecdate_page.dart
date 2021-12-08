@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anecdate_app/model/anecdate.dart';
 import 'package:anecdate_app/utils/api.dart';
 import 'package:anecdate_app/utils/globals.dart';
 import 'package:anecdate_app/utils/utils.dart';
@@ -9,14 +10,19 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class AddAnecdatePage extends StatefulWidget {
-  const AddAnecdatePage({Key? key}) : super(key: key);
+  int? idAnecdate;
+
+  AddAnecdatePage(this.idAnecdate);
 
   @override
-  AddAnecdatePageState createState() => AddAnecdatePageState();
+  AddAnecdatePageState createState() => AddAnecdatePageState(idAnecdate);
 }
 
 class AddAnecdatePageState extends State<AddAnecdatePage> {
+  int? idAnecdate;
+
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   late TextEditingController _titleCon;
   late TextEditingController _dateCon;
   late TextEditingController _descCon;
@@ -34,6 +40,8 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   late String _categoryValue;
   bool _facultatifDisplay = false;
   var _currentFocus;
+
+  AddAnecdatePageState(this.idAnecdate);
 
   void _unfocus() {
     _currentFocus = FocusScope.of(context);
@@ -92,17 +100,22 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
   }
 
   Widget _createAddPage() {
+    List<Widget> list = [];
+
+    list.add(_createTitleField());
+    list.add(_createDateField());
+    list.add(_createImageField());
+
+    list.add(_createDescField());
+
+    list.add(_createCategoryField());
+    list.add(_createSourcesField());
+    list.add(_createFacultatifField());
+
+    list.add(_createValidateButton());
+
     return SingleChildScrollView(
-      child: Column(children: [
-        _createTitleField(),
-        _createDateField(),
-        _createImageField(),
-        _createDescField(),
-        _createCategoryField(),
-        _createSourcesField(),
-        _createFacultatifField(),
-        _createValidateButton(),
-      ]),
+      child: Column(children: list),
     );
   }
 
@@ -145,7 +158,7 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Veuillez entrer un titre valide.";
-                    } else if (value.length > 30) {
+                    } else if (value.length > 50) {
                       return "Veuillez mettre un titre de moins de 50 caractères.";
                     }
                     return null;
@@ -765,7 +778,7 @@ class AddAnecdatePageState extends State<AddAnecdatePage> {
                     Text("N'oubliez pas de mettre une image d'illustration.")));
           } else if (_formKey.currentState!.validate()) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text("Votre aned'date est en cours d'envoi...")));
+                content: Text("Votre anec'date est en cours d'envoi...")));
 
             postNewAnecDate(
                 _titleCon.text,
